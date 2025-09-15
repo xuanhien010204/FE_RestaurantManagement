@@ -28,8 +28,20 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
 
     // Check role-based access if roles are specified
     if (allowedRoles && user) {
-        const hasRequiredRole = allowedRoles.includes(user.role);
+        // Normalize both sides to avoid mismatches due to casing, whitespace or numeric/string differences
+        const normalizedUserRole = String(user.role ?? "").trim().toLowerCase();
+        const hasRequiredRole = allowedRoles.some((r) => String(r ?? "").trim().toLowerCase() === normalizedUserRole);
+
         if (!hasRequiredRole) {
+            // Helpful debug log to understand why a user with "Admin" role might be denied
+            if (typeof console !== "undefined" && typeof console.warn === "function") {
+                console.warn("AuthGuard: access denied - role mismatch", {
+                    allowedRoles,
+                    userRole: user.role,
+                    normalizedUserRole,
+                });
+            }
+
             return <Navigate to="/unauthorized" replace />;
         }
     }
