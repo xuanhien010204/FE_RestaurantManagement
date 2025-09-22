@@ -13,10 +13,28 @@ const axiosInstance = axios.create({
 });
 
 // Token management
+// Persist token in localStorage so it survives reloads (trade-off: XSS risk)
+const TOKEN_STORAGE_KEY = "fe_restaurant_access_token";
+
 let accessToken: string | null = null;
+
+// initialize from localStorage if present
+try {
+    const stored = localStorage.getItem(TOKEN_STORAGE_KEY);
+    accessToken = stored ?? null;
+} catch {
+    // localStorage may be unavailable in some environments (SSR or restrictive browsers)
+    accessToken = null;
+}
 
 export const setAccessToken = (token: string | null | undefined): void => {
     accessToken = token ?? null;
+    try {
+        if (accessToken) localStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
+        else localStorage.removeItem(TOKEN_STORAGE_KEY);
+    } catch {
+        // ignore storage errors
+    }
 };
 
 export const getAccessToken = (): string | null => {

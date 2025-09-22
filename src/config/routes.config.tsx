@@ -6,6 +6,7 @@ import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
 
 // Lazy load pages for better performance
 const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
+const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
 
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
@@ -18,7 +19,10 @@ export const routeConfig: RouteObject[] = [
         path: "/unauthorized",
         element: <UnauthorizedPage />,
     },
-
+    {
+        path: "/register",
+        element: <RegisterPage />,
+    },
     // Protected routes
     {
         path: "/",

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/useAuth";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import type { AxiosError } from "axios";
-import { Form, Input, Button, Alert, Typography, Card, Spin, Divider } from "antd";
-import GoogleLoginButton from "../../components/GoogleLoginButton";
+import { Alert, Typography, Card, Divider } from "antd";
+import GoogleLoginButton from "../../components/auth/GoogleLoginButton";
+import LoginForm from "../../components/auth/LoginForm";
 
 const { Title, Text } = Typography;
 
@@ -14,15 +15,16 @@ interface LocationState {
 }
 
 const LoginPage: React.FC = () => {
-    const { login, loading, loginWithGoogle } = useAuth();
+    const { login, loginWithGoogle } = useAuth();
     const navigate = useNavigate();
     const location = useLocation() as { state?: LocationState };
 
     const [error, setError] = useState<string | null>(null);
+    // Removed inline register toggle
 
     const redirectPath = location.state?.from?.pathname ?? "/";
 
-    const onFinish = async (values: { email: string; password: string }) => {
+    const onLogin = async (values: { email: string; password: string }) => {
         try {
             await login(values.email, values.password);
             navigate(redirectPath, { replace: true });
@@ -35,6 +37,8 @@ const LoginPage: React.FC = () => {
             setError(errorMessage);
         }
     };
+
+    // register handled on its own page
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -54,43 +58,7 @@ const LoginPage: React.FC = () => {
                     />
                 )}
 
-                <Form
-                    name="login"
-                    layout="vertical"
-                    onFinish={onFinish}
-                    initialValues={{ email: "", password: "" }}
-                >
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[
-                            { required: true, message: "Please input your email!" },
-                            { type: "email", message: "Email is not valid" },
-                        ]}
-                    >
-                        <Input placeholder="Email address" disabled={loading} />
-                    </Form.Item>
-
-                    <Form.Item
-                        label="Password"
-                        name="password"
-                        rules={[{ required: true, message: "Please input your password!" }]}
-                    >
-                        <Input.Password placeholder="Password" disabled={loading} />
-                    </Form.Item>
-
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            block
-                            disabled={loading}
-                            icon={loading ? <Spin size="small" /> : undefined}
-                        >
-                            {loading ? "Signing in..." : "Sign in"}
-                        </Button>
-                    </Form.Item>
-                </Form>
+                <LoginForm onFinish={(v) => onLogin(v as { email: string; password: string })} />
 
                 <Divider>or</Divider>
 
@@ -107,6 +75,10 @@ const LoginPage: React.FC = () => {
                     }}
                     onError={(err) => setError(String(err ?? "Google login error"))}
                 />
+
+                <div className="mt-4 text-center">
+                    <Link to="/register" className="text-blue-600 hover:underline">Don't have an account? Register</Link>
+                </div>
             </Card>
         </div>
     );
