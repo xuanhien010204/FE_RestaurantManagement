@@ -54,12 +54,14 @@ export const loginWithGoogle = async (idToken: string): Promise<LoginResponse> =
 };
 
 export const logout = async (): Promise<void> => {
-    try {
-        await authApi.logout();
-    } finally {
-        // Always cleanup local state
-        setAccessToken(null);
-    }
+    // Do not call backend logout endpoint; just clear local access token
+    // Reason: stateless JWT stored in memory only, no server-side session to clear
+    setAccessToken(null);
+};
+
+export const register = async (payload: { name: string; email: string; password: string; phone?: string; address?: string }) => {
+    const response = await authApi.register(payload);
+    return response.data;
 };
 
 // Map backend user DTO to frontend User type

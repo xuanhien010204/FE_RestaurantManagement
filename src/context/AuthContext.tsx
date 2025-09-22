@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import * as authService from "../services/auth.service";
-import { setAccessToken } from "../utils/axios";
 import { AuthContext } from "./AuthContextBase";
 import type { User } from "../types/User";
 
@@ -14,9 +13,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     // Initialize auth state on app start
     useEffect(() => {
-        // No refresh token flow: start unauthenticated and clear any access token in memory
+        // Do not clear persisted token on startup - allow token from localStorage to be used
         setUser(null);
-        setAccessToken(null);
         setLoading(false);
     }, []);
 
