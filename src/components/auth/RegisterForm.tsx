@@ -1,21 +1,29 @@
 import { Form, Input, Button } from "antd";
+import type { FormInstance } from "antd";
 import { LockOutlined, UserOutlined, MailOutlined } from "@ant-design/icons";
 
-const RegisterForm = ({ onFinish }: { onFinish: (values: unknown) => Promise<void> | void }) => {
+const RegisterForm = ({
+    onFinish,
+    form,
+}: {
+    onFinish: (values: unknown) => Promise<void> | void;
+    form?: FormInstance;
+}) => {
     return (
         <Form
+            form={form}
             name="register"
             layout="vertical"
             onFinish={onFinish}
             style={{ maxWidth: 400, margin: "0 auto" }}
         >
-            <Form.Item
-                label="Full Name"
-                name="fullName"
-                rules={[{ required: true, message: "Please enter your full name!" }]}
-            >
-                <Input prefix={<UserOutlined />} placeholder="Nguyen Van A" />
-            </Form.Item>
+                <Form.Item
+                    label="Full Name"
+                    name="fullName"
+                    rules={[{ required: true, message: "Please enter your full name!" }]}
+                >
+                    <Input prefix={<UserOutlined />} placeholder="Nguyen Van A" />
+                </Form.Item>
 
             <Form.Item
                 label="Phone"
@@ -56,25 +64,25 @@ const RegisterForm = ({ onFinish }: { onFinish: (values: unknown) => Promise<voi
                 <Input.Password prefix={<LockOutlined />} placeholder="********" />
             </Form.Item>
 
-            <Form.Item
-                label="Confirm Password"
-                name="confirmPassword"
-                dependencies={["password"]}
-                hasFeedback
-                rules={[
-                    { required: true, message: "Please confirm your password!" },
-                    ({ getFieldValue }) => ({
-                        validator(_, value) {
-                            if (!value || getFieldValue("password") === value) {
-                                return Promise.resolve();
-                            }
-                            return Promise.reject(new Error("Passwords do not match!"));
-                        },
-                    }),
-                ]}
-            >
-                <Input.Password prefix={<LockOutlined />} placeholder="********" />
-            </Form.Item>
+                <Form.Item
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    dependencies={["password"]}
+                    hasFeedback
+                    rules={[
+                        { required: true, message: "Please confirm your password!" },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if (!value || getFieldValue("password") === value) {
+                                    return Promise.resolve();
+                                }
+                                return Promise.reject(new Error("Passwords do not match!"));
+                            },
+                        }),
+                    ]}
+                >
+                    <Input.Password prefix={<LockOutlined />} placeholder="********" />
+                </Form.Item>
 
             <Form.Item>
                 <Button type="primary" htmlType="submit" block>
