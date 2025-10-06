@@ -59,7 +59,7 @@ export const logout = async (): Promise<void> => {
     setAccessToken(null);
 };
 
-export const register = async (payload: { name: string; email: string; password: string; phone?: string; address?: string }) => {
+export const register = async (payload: { fullName: string; email: string; password: string; confirmPassword: string; phone?: string; address?: string }) => {
     const response = await authApi.register(payload);
     return response.data;
 };
