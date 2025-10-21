@@ -1,84 +1,66 @@
 import React from "react";
-import { Layout, Typography, Space, Divider } from "antd";
-import { HeartFilled } from "@ant-design/icons";
-
-const { Footer: AntFooter } = Layout;
-const { Text, Link } = Typography;
 
 const Footer: React.FC = () => {
-    const currentYear = new Date().getFullYear();
+    const year = new Date().getFullYear();
+
+    const locations = [
+        {
+            title: "Thuyền Quán",
+            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
+            hours: "09:00 AM - 12:00 PM",
+            phone: "+039 2818 8285",
+            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
+        },
+        {
+            title: "Thuyền Quán",
+            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
+            hours: "09:00 AM - 12:00 PM",
+            phone: "+039 2818 8285",
+            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
+        },
+        {
+            title: "Thuyền Quán",
+            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
+            hours: "09:00 AM - 12:00 PM",
+            phone: "+039 2818 8285",
+            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
+    
+        },
+    ];
 
     return (
-        <AntFooter className="bg-gray-50 border-t border-gray-200">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-8">
-                    {/* About Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-900">Nhà Hàng ABC</h3>
-                        <p className="text-gray-600 text-sm">
-                            Hệ thống quản lý nhà hàng hiện đại, mang đến trải nghiệm ẩm thực tuyệt vời
-                            với dịch vụ chuyên nghiệp.
-                        </p>
+        <footer>
+            <div className="bg-red-600 text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6">
+                        {locations.map((loc) => (
+                            <div key={loc.title} className="p-4 bg-red-500 rounded shadow-inner">
+                                <h3 className="text-xl font-semibold mb-2">{loc.title}</h3>
+                                <p className="text-sm opacity-90">{loc.address}</p>
+                                <p className="text-sm opacity-80 mt-1">Hours: {loc.hours}</p>
+                                <p className="text-sm opacity-90 mt-2">Phone: <a className="underline" href={`tel:${loc.phone}`}>{loc.phone}</a></p>
+                                <p className="mt-3">
+                                    <a
+                                        className="inline-block bg-white text-red-600 px-3 py-1 rounded hover:underline"
+                                        href={loc.map}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Click to View Google Map
+                                    </a>
+                                </p>
+                            </div>
+                        ))}
                     </div>
-
-                    {/* Quick Links */}
-                    <div className="space-y-4">
-                        <h4 className="text-md font-medium text-gray-900">Liên kết nhanh</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Link href="/">Trang chủ</Link></li>
-                            <li><Link href="/menu">Thực đơn</Link></li>
-                            <li><Link href="/reservations">Đặt bàn</Link></li>
-                            <li><Link href="/contact">Liên hệ</Link></li>
-                        </ul>
-                    </div>
-
-                    {/* Services */}
-                    <div className="space-y-4">
-                        <h4 className="text-md font-medium text-gray-900">Dịch vụ</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li><Text type="secondary">Đặt bàn trực tuyến</Text></li>
-                            <li><Text type="secondary">Giao hàng tận nơi</Text></li>
-                            <li><Text type="secondary">Tổ chức sự kiện</Text></li>
-                            <li><Text type="secondary">Catering</Text></li>
-                        </ul>
-                    </div>
-
-                    {/* Contact Info */}
-                    <div className="space-y-4">
-                        <h4 className="text-md font-medium text-gray-900">Thông tin liên hệ</h4>
-                        <div className="space-y-2 text-sm text-gray-600">
-                            <p>📍 194 Đường Xuân Diệu, Quy Nhơn, Gia Lai</p>
-                            <p>📞 (028) 1234 5678</p>
-                            <p>✉️ ThuyenQuan@restaurant-abc.com</p>
-                            <p>🕒 Mở cửa: 09:00 - 22:00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <Divider className="my-4" />
-
-                {/* Bottom Section */}
-                <div className="flex flex-col md:flex-row justify-between items-center py-4 text-sm text-gray-500">
-                    <Space align="center">
-                        <Text type="secondary">
-                            © {currentYear} Restaurant Management System.
-                        </Text>
-                        <Text type="secondary">
-                            Made with <HeartFilled className="text-red-500 mx-1" /> by Development Team
-                        </Text>
-                    </Space>
-
-                    <Space className="mt-4 md:mt-0">
-                        <Link href="/privacy" className="text-gray-500 hover:text-gray-700">
-                            Chính sách bảo mật
-                        </Link>
-                        <Link href="/terms" className="text-gray-500 hover:text-gray-700">
-                            Điều khoản sử dụng
-                        </Link>
-                    </Space>
                 </div>
             </div>
-        </AntFooter>
+
+            <div className="bg-slate-800 text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center text-sm">
+                    <span>Copyright © {year} | Shaheen Uddin Ahmad</span>
+                </div>
+            </div>
+        </footer>
     );
 };
 
