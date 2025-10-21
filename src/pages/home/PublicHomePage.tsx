@@ -85,7 +85,7 @@ const PublicHomePage: React.FC = () => {
                                     <Button type="primary" size="large" className="bg-white text-blue-600 border-white hover:bg-gray-100">
                                         <Link to="/register">Đăng ký ngay</Link>
                                     </Button>
-                                    <Button size="large" className="text-white border-white hover:bg-white hover:text-blue-600">
+                                    <Button type="primary" size="large" className="bg-white text-blue-600 border-white hover:bg-gray-100">
                                         <Link to="/login">Đăng nhập</Link>
                                     </Button>
                                 </>
@@ -173,7 +173,7 @@ const PublicHomePage: React.FC = () => {
                                     <div>
                                         <Text strong>Địa chỉ:</Text>
                                         <br />
-                                        <Text>123 Đường ABC, Quận 1, TP. Hồ Chí Minh</Text>
+                                        <Text>194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai</Text>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3">
@@ -181,7 +181,7 @@ const PublicHomePage: React.FC = () => {
                                     <div>
                                         <Text strong>Điện thoại:</Text>
                                         <br />
-                                        <Text>(028) 1234 5678</Text>
+                                        <Text>(039) 2818 285</Text>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3">
@@ -189,7 +189,7 @@ const PublicHomePage: React.FC = () => {
                                     <div>
                                         <Text strong>Giờ mở cửa:</Text>
                                         <br />
-                                        <Text>Hằng ngày: 10:00 - 22:00</Text>
+                                        <Text>Hằng ngày: 09:00 - 12:00</Text>
                                     </div>
                                 </div>
                             </Space>
