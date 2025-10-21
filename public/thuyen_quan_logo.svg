@@ -1,0 +1,7 @@
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+  <rect width='64' height='64' fill='white'/>
+  <path d='M4 42 Q32 14 60 42 Z' fill='%23007acc'/>
+  <path d='M10 42 Q32 26 54 42 Z' fill='%23ffffff'/>
+  <path d='M0 50 Q16 46 32 50 T64 50' stroke='%23007acc' stroke-width='3' fill='none'/>
+</svg>"/>
