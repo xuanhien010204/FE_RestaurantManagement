@@ -9,6 +9,13 @@ import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
 const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
 
+// Admin pages
+const MenuManagementPage = lazy(() => import("../pages/admin/MenuManagementPage"));
+const StaffManagementPage = lazy(() => import("../pages/admin/StaffManagementPage"));
+const OrderManagementPage = lazy(() => import("../pages/admin/OrderManagementPage"));
+const TableManagementPage = lazy(() => import("../pages/admin/TableManagementPage"));
+const FeedbackManagementPage = lazy(() => import("../pages/admin/FeedbackManagementPage"));
+
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
     // Public routes without layout
@@ -42,8 +49,84 @@ export const routeConfig: RouteObject[] = [
                 <AuthGuard allowedRoles={["Admin"]}>
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-                        <p className="text-gray-600">Admin functionality coming soon...</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý thực đơn</h3>
+                                <p className="text-gray-600 mb-4">Quản lý các món ăn và thức uống</p>
+                                <a href="/admin/menu" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý nhân viên</h3>
+                                <p className="text-gray-600 mb-4">Quản lý thông tin nhân viên</p>
+                                <a href="/admin/staff" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý đơn hàng</h3>
+                                <p className="text-gray-600 mb-4">Theo dõi và xử lý đơn hàng</p>
+                                <a href="/admin/orders" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý bàn ăn</h3>
+                                <p className="text-gray-600 mb-4">Quản lý bàn và đặt chỗ</p>
+                                <a href="/admin/tables" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý đánh giá</h3>
+                                <p className="text-gray-600 mb-4">Xem và phản hồi đánh giá</p>
+                                <a href="/admin/feedback" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                        </div>
                     </div>
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/menu",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <MenuManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/staff",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin"]}>
+                    <StaffManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/orders",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <OrderManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/tables",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <TableManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/feedback",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin"]}>
+                    <FeedbackManagementPage />
                 </AuthGuard>
             </AppLayout>
         ),

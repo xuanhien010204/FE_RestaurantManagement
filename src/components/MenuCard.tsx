@@ -19,7 +19,7 @@ const MenuCard: React.FC<MenuCardProps> = ({ title, description, price, image })
                 <p className="text-sm text-gray-500">{description}</p>
                 <div className="mt-4 flex items-center justify-between">
                     <div className="text-lg font-bold">{price}</div>
-                    <Button type="primary" className="bg-brand.red border-0">Add</Button>
+                    <Button type="primary" className="bg-brand-red border-brand-red hover:bg-red-700">Add</Button>
                 </div>
             </div>
         </Card>

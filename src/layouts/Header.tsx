@@ -54,7 +54,35 @@ const Header: React.FC = () => {
                         <Link to="/">HOME</Link>
                         <Link to="/about">ABOUT</Link>
                         <Link to="/items">ITEMS</Link>
-                        <Link to="/pages">PAGES</Link>
+                        {isAuthenticated && user?.role === 'Admin' && (
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'admin-dashboard', label: 'Dashboard', onClick: () => navigate('/admin') },
+                                        { key: 'admin-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
+                                        { key: 'admin-staff', label: 'Quản lý nhân viên', onClick: () => navigate('/admin/staff') },
+                                        { key: 'admin-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
+                                        { key: 'admin-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
+                                        { key: 'admin-feedback', label: 'Quản lý đánh giá', onClick: () => navigate('/admin/feedback') },
+                                    ]
+                                }}
+                            >
+                                <a className="cursor-pointer">ADMIN</a>
+                            </Dropdown>
+                        )}
+                        {isAuthenticated && user?.role === 'Staff' && (
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'staff-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
+                                        { key: 'staff-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
+                                        { key: 'staff-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
+                                    ]
+                                }}
+                            >
+                                <a className="cursor-pointer">STAFF</a>
+                            </Dropdown>
+                        )}
                         <Link to="/contact">CONTACT</Link>
                     </nav>
 
@@ -77,6 +105,16 @@ const Header: React.FC = () => {
                                 menu={{
                                     items: [
                                         { key: 'profile', label: 'Profile', onClick: () => navigate('/profile') },
+                                        ...(user?.role === 'Admin' ? [
+                                            { type: 'divider' as const },
+                                            { key: 'admin-dashboard', label: '🏠 Admin Dashboard', onClick: () => navigate('/admin') },
+                                        ] : []),
+                                        ...(user?.role === 'Staff' ? [
+                                            { type: 'divider' as const },
+                                            { key: 'staff-menu', label: '🍽️ Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
+                                            { key: 'staff-orders', label: '📋 Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
+                                        ] : []),
+                                        { type: 'divider' as const },
                                         { key: 'logout', label: 'Logout', onClick: handleLogout }
                                     ]
                                 }}

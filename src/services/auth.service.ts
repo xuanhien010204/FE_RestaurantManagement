@@ -64,6 +64,42 @@ export const register = async (payload: { fullName: string; email: string; passw
     return response.data;
 };
 
+export const getProfile = async (): Promise<User> => {
+    const response = await authApi.getProfile();
+    return mapBackendUserToFrontend(response.data);
+};
+
+export const updateProfile = async (payload: { fullName: string; phone: string; address: string }) => {
+    const response = await authApi.updateProfile(payload);
+    return response.data;
+};
+
+export const changePassword = async (payload: { currentPassword: string; newPassword: string; confirmNewPassword: string }) => {
+    const response = await authApi.changePassword(payload);
+    return response.data;
+};
+
+export const forgotPassword = async (email: string) => {
+    const response = await authApi.forgotPassword({ email });
+    return response.data;
+};
+
+export const resetPassword = async (payload: { newPassword: string; confirmPassword: string; token: string }) => {
+    const response = await authApi.resetPassword(payload);
+    return response.data;
+};
+
+// User Management (Admin only)
+export const deleteUser = async (id: number) => {
+    const response = await authApi.deleteUser(id);
+    return response.data;
+};
+
+export const lockUser = async (id: number) => {
+    const response = await authApi.lockUser(id);
+    return response.data;
+};
+
 // Map backend user DTO to frontend User type
 const mapBackendUserToFrontend = (raw: unknown): User => {
     const backendUser = raw as Record<string, unknown>;
