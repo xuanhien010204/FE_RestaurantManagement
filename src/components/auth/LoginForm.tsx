@@ -1,12 +1,17 @@
 import { Form, Input, Button } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 
-const LoginForm = ({ onFinish }: { onFinish: (values: unknown) => Promise<void> | void }) => {
+interface LoginFormProps {
+  onFinish: (values: { email: string; password: string }) => Promise<void> | void;
+  loading?: boolean;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onFinish, loading = false }) => {
   return (
     <Form
       name="login"
       layout="vertical"
-      onFinish={onFinish}
+      onFinish={(values) => onFinish(values as { email: string; password: string })}
       style={{ maxWidth: 400, margin: "0 auto" }}
     >
       <Form.Item
@@ -29,7 +34,7 @@ const LoginForm = ({ onFinish }: { onFinish: (values: unknown) => Promise<void> 
       </Form.Item>
 
       <Form.Item>
-        <Button type="primary" htmlType="submit" block>
+        <Button type="primary" htmlType="submit" block loading={loading}>
           Login
         </Button>
       </Form.Item>

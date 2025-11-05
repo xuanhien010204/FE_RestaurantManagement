@@ -29,3 +29,14 @@ export interface Payment {
     paymentDate: string;
     paymentDetails?: PaymentDetail[];
 }
+
+export interface PaymentStatistics {
+    totalCompleted: number;
+    totalPending: number;
+    totalFailed: number;
+    countCompleted: number;
+    countPending: number;
+    countFailed: number;
+    totalRevenue: number;
+    generatedAt: string;
+}

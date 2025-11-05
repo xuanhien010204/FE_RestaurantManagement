@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAppSelector } from "../redux/app/hook";
 import type { UserRole } from "../types/User";
 
 interface AuthGuardProps {
@@ -9,8 +9,14 @@ interface AuthGuardProps {
 }
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
-    const { isAuthenticated, user, loading } = useAuth();
+    const auth = useAppSelector(state => state.auth);
+    const { user, token, loading } = auth as {
+        user: { role: UserRole } | null;
+        token: string | null;
+        loading: boolean;
+    };
     const location = useLocation();
+    const isAuthenticated = !!token && !!user;
 
     // Show loading spinner while checking auth state
     if (loading) {
@@ -30,7 +36,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
     if (allowedRoles && user) {
         // Normalize both sides to avoid mismatches due to casing, whitespace or numeric/string differences
         const normalizedUserRole = String(user.role ?? "").trim().toLowerCase();
-        const hasRequiredRole = allowedRoles.some((r) => String(r ?? "").trim().toLowerCase() === normalizedUserRole);
+        const hasRequiredRole = allowedRoles.some((r: UserRole) => String(r ?? "").trim().toLowerCase() === normalizedUserRole);
 
         if (!hasRequiredRole) {
             // Helpful debug log to understand why a user with "Admin" role might be denied

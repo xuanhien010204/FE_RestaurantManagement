@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/useAuth";
+import { useAppDispatch, useAppSelector } from "../../redux/app/hook";
+import { loginUser } from "../../redux/actions/authActions";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import type { AxiosError } from "axios";
 import { Alert, Typography, Card, Divider } from "antd";
@@ -15,30 +16,43 @@ interface LocationState {
 }
 
 const LoginPage: React.FC = () => {
-    const { login, loginWithGoogle } = useAuth();
+    const dispatch = useAppDispatch();
+    const authState = useAppSelector(state => state.auth);
+    const { loading, error } = authState as { loading: boolean; error: string | null };
     const navigate = useNavigate();
     const location = useLocation() as { state?: LocationState };
 
-    const [error, setError] = useState<string | null>(null);
-    // Removed inline register toggle
+    const [localError, setLocalError] = useState<string | null>(null);
 
     const redirectPath = location.state?.from?.pathname ?? "/";
 
     const onLogin = async (values: { email: string; password: string }) => {
         try {
-            await login(values.email, values.password);
-            navigate(redirectPath, { replace: true });
+            console.log('[LoginPage] onLogin called with:', values);
+            setLocalError(null);
+            const result = await dispatch(loginUser(values));
+            console.log('[LoginPage] Dispatch result:', result);
+
+            // Check if login was successful
+            if (loginUser.fulfilled.match(result)) {
+                console.log('[LoginPage] Login fulfilled, navigating to:', redirectPath);
+                navigate(redirectPath, { replace: true });
+            } else if (loginUser.rejected.match(result)) {
+                console.log('[LoginPage] Login rejected with payload:', result.payload);
+                setLocalError(result.payload as string || 'Login failed');
+            }
         } catch (err) {
+            console.error('[LoginPage] Caught error:', err);
             const axiosError = err as AxiosError<{ message?: string }>;
             const errorMessage =
                 axiosError.response?.data?.message ??
                 axiosError.message ??
                 "Login failed. Please try again.";
-            setError(errorMessage);
+            setLocalError(errorMessage);
         }
     };
 
-    // register handled on its own page
+    const displayError = error || localError;
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -48,32 +62,36 @@ const LoginPage: React.FC = () => {
                     <Text type="secondary">Welcome to Restaurant Management System</Text>
                 </div>
 
-                {error && (
+                {displayError && (
                     <Alert
-                        message={error}
+                        message={displayError}
                         type="error"
                         showIcon
                         closable
                         className="mb-4"
+                        onClose={() => setLocalError(null)}
                     />
                 )}
 
-                <LoginForm onFinish={(v) => onLogin(v as { email: string; password: string })} />
+                <LoginForm
+                    onFinish={(v) => onLogin(v as { email: string; password: string })}
+                    loading={loading}
+                />
 
                 <Divider>or</Divider>
 
                 <GoogleLoginButton
-                    onSuccess={async (idToken) => {
+                    onSuccess={async () => {
                         try {
-                            await loginWithGoogle(idToken);
-                            navigate(redirectPath, { replace: true });
+                            // TODO: Implement Google login Redux action here
+                            setLocalError("Google login not yet implemented with Redux");
                         } catch (err) {
                             const axiosError = err as AxiosError<{ message?: string }>;
                             const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? "Google login failed";
-                            setError(errorMessage);
+                            setLocalError(errorMessage);
                         }
                     }}
-                    onError={(err) => setError(String(err ?? "Google login error"))}
+                    onError={(err) => setLocalError(String(err ?? "Google login error"))}
                 />
 
                 <div className="mt-4 text-center">
