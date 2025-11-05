@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
+    "@reduxjs/toolkit": "^2.10.1",
     "antd": "^5.27.3",
     "axios": "^1.12.1",
+    "dayjs": "^1.11.19",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.1"
   },
   "devDependencies": {
