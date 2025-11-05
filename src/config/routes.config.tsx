@@ -15,6 +15,8 @@ const StaffManagementPage = lazy(() => import("../pages/admin/StaffManagementPag
 const OrderManagementPage = lazy(() => import("../pages/admin/OrderManagementPage"));
 const TableManagementPage = lazy(() => import("../pages/admin/TableManagementPage"));
 const FeedbackManagementPage = lazy(() => import("../pages/admin/FeedbackManagementPage"));
+const PaymentManagementPage = lazy(() => import("../pages/admin/PaymentManagementPage"));
+const PaymentCreatePage = lazy(() => import("../pages/admin/PaymentCreatePage"));
 
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
@@ -75,6 +77,11 @@ export const routeConfig: RouteObject[] = [
                                 <p className="text-gray-600 mb-4">Xem và phản hồi đánh giá</p>
                                 <a href="/admin/feedback" className="text-blue-600 hover:underline">Xem chi tiết →</a>
                             </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý thanh toán</h3>
+                                <p className="text-gray-600 mb-4">Theo dõi giao dịch và doanh thu</p>
+                                <a href="/admin/payments" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
                         </div>
                     </div>
                 </AuthGuard>
@@ -127,6 +134,26 @@ export const routeConfig: RouteObject[] = [
             <AppLayout>
                 <AuthGuard allowedRoles={["Admin"]}>
                     <FeedbackManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/payments",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <PaymentManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/admin/payments/create",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <PaymentCreatePage />
                 </AuthGuard>
             </AppLayout>
         ),

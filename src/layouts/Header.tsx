@@ -2,15 +2,19 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Badge, Avatar, Dropdown, Space } from "antd";
 import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
-import { useAuth } from "../context/useAuth";
+import { useAppDispatch, useAppSelector } from "../redux/app/hook";
+import { logout } from "../redux/slices/authSlice";
 
 const Header: React.FC = () => {
-    const { user, isAuthenticated, logout } = useAuth();
+    const dispatch = useAppDispatch();
+    const authState = useAppSelector(state => state.auth);
+    const { user, token } = authState as { user: { fullName: string; role: string } | null; token: string | null };
+    const isAuthenticated = !!token && !!user;
     const navigate = useNavigate();
 
     const handleLogout = async () => {
         try {
-            await logout();
+            dispatch(logout());
             navigate('/login');
         } catch (err) {
             console.error('Logout failed', err);
@@ -64,6 +68,7 @@ const Header: React.FC = () => {
                                         { key: 'admin-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
                                         { key: 'admin-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
                                         { key: 'admin-feedback', label: 'Quản lý đánh giá', onClick: () => navigate('/admin/feedback') },
+                                        { key: 'admin-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
                                     ]
                                 }}
                             >
@@ -77,6 +82,7 @@ const Header: React.FC = () => {
                                         { key: 'staff-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
                                         { key: 'staff-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
                                         { key: 'staff-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
+                                        { key: 'staff-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
                                     ]
                                 }}
                             >
@@ -113,6 +119,7 @@ const Header: React.FC = () => {
                                             { type: 'divider' as const },
                                             { key: 'staff-menu', label: '🍽️ Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
                                             { key: 'staff-orders', label: '📋 Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
+                                            { key: 'staff-payments', label: '💳 Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
                                         ] : []),
                                         { type: 'divider' as const },
                                         { key: 'logout', label: 'Logout', onClick: handleLogout }

@@ -16,22 +16,22 @@ const UserStatusMap: Record<number, User["status"]> = {
 };
 
 export interface LoginResponse {
-    accessToken: string;
+    token: string;
     user: User;
 }
 
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
     try {
         const response = await authApi.login({ email, password });
-        const { accessToken, user: rawUser } = response.data;
+        const { token, user: rawUser } = response.data;
 
         // Set access token in memory
-        setAccessToken(accessToken);
+        setAccessToken(token);
 
         // Map backend user to frontend user
         const user = mapBackendUserToFrontend(rawUser);
 
-        return { accessToken, user };
+        return { token, user };
     } catch (error) {
         setAccessToken(null);
         throw error;
@@ -41,12 +41,12 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 export const loginWithGoogle = async (idToken: string): Promise<LoginResponse> => {
     try {
         const response = await authApi.loginWithGoogle({ idToken });
-        const { accessToken, user: rawUser } = response.data;
+        const { token, user: rawUser } = response.data;
 
-        setAccessToken(accessToken);
+        setAccessToken(token);
 
         const user = mapBackendUserToFrontend(rawUser);
-        return { accessToken, user };
+        return { token, user };
     } catch (error) {
         setAccessToken(null);
         throw error;
@@ -59,7 +59,7 @@ export const logout = async (): Promise<void> => {
     setAccessToken(null);
 };
 
-export const register = async (payload: { fullName: string; email: string; password: string; confirmPassword: string; phone?: string; address?: string }) => {
+export const register = async (payload: authApi.RegisterRequest) => {
     const response = await authApi.register(payload);
     return response.data;
 };
@@ -86,17 +86,6 @@ export const forgotPassword = async (email: string) => {
 
 export const resetPassword = async (payload: { newPassword: string; confirmPassword: string; token: string }) => {
     const response = await authApi.resetPassword(payload);
-    return response.data;
-};
-
-// User Management (Admin only)
-export const deleteUser = async (id: number) => {
-    const response = await authApi.deleteUser(id);
-    return response.data;
-};
-
-export const lockUser = async (id: number) => {
-    const response = await authApi.lockUser(id);
     return response.data;
 };
 
