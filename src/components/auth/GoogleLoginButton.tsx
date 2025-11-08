@@ -8,15 +8,25 @@ interface Props {
 
 const GoogleLoginButton: FC<Props> = ({ onSuccess, onError }) => {
     return (
-        <div>
+        <div className="flex justify-center">
             {/* Keep the branded GoogleLogin for the official look; it also handles OneTap if enabled. */}
             <GoogleLogin
                 onSuccess={(credentialResponse: CredentialResponse) => {
                     const idToken = credentialResponse && typeof credentialResponse.credential === "string" ? credentialResponse.credential : undefined;
-                    if (idToken) onSuccess(idToken);
-                    else onError?.(new Error("No credential returned"));
+                    if (idToken) {
+                        console.log('[GoogleLoginButton] Google login successful, idToken:', idToken.substring(0, 20) + '...');
+                        onSuccess(idToken);
+                    } else {
+                        const error = new Error("No credential returned");
+                        console.error('[GoogleLoginButton]', error);
+                        onError?.(error);
+                    }
                 }}
-                onError={() => onError?.(new Error("Google login failed"))}
+                onError={() => {
+                    const error = new Error("Google login failed");
+                    console.error('[GoogleLoginButton]', error);
+                    onError?.(error);
+                }}
                 useOneTap={false}
                 text="signin_with"
             />

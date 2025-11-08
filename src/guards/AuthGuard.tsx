@@ -32,19 +32,23 @@ const AuthGuard: React.FC<AuthGuardProps> = ({ children, allowedRoles }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    // Check role-based access if roles are specified
-    if (allowedRoles && user) {
+    // If no allowedRoles specified, default to Customer only (prevents Customer from accessing admin)
+    const effectiveAllowedRoles = allowedRoles || ["Customer"];
+
+    // Check role-based access
+    if (user) {
         // Normalize both sides to avoid mismatches due to casing, whitespace or numeric/string differences
         const normalizedUserRole = String(user.role ?? "").trim().toLowerCase();
-        const hasRequiredRole = allowedRoles.some((r: UserRole) => String(r ?? "").trim().toLowerCase() === normalizedUserRole);
+        const hasRequiredRole = effectiveAllowedRoles.some((r: UserRole) => String(r ?? "").trim().toLowerCase() === normalizedUserRole);
 
         if (!hasRequiredRole) {
-            // Helpful debug log to understand why a user with "Admin" role might be denied
+            // Helpful debug log to understand why a user with role might be denied
             if (typeof console !== "undefined" && typeof console.warn === "function") {
                 console.warn("AuthGuard: access denied - role mismatch", {
-                    allowedRoles,
+                    allowedRoles: effectiveAllowedRoles,
                     userRole: user.role,
                     normalizedUserRole,
+                    currentPath: location.pathname
                 });
             }
 
