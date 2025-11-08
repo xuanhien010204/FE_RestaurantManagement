@@ -56,7 +56,7 @@ const LoginPage: React.FC = () => {
         try {
             console.log('[LoginPage] onGoogleLoginSuccess called with idToken');
             setLocalError(null);
-            
+
             // Call API directly without Redux to avoid potential loading issues
             const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-login`, {
                 method: 'POST',

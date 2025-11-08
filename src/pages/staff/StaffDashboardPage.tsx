@@ -518,7 +518,7 @@ const StaffDashboardPage: React.FC = () => {
                     >
                         <Table
                             columns={reservationColumns}
-                            dataSource={reservations.filter(r => 
+                            dataSource={reservations.filter(r =>
                                 dayjs(r.reservationTime).isSame(dayjs(), 'day')
                             )}
                             rowKey="id"

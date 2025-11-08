@@ -20,19 +20,19 @@ export const getAllMenuItems = () => axios.get("/menu-item");
 export const getMenuItemById = (id: number) => axios.get(`/menu-item/${id}`);
 
 // Search menu items (staff/admin)
-export const searchMenuItems = (keyword?: string) => 
+export const searchMenuItems = (keyword?: string) =>
     axios.get(`/menu-item/search?keyword=${encodeURIComponent(keyword || "")}`);
 
 // Add menu item (staff/admin)
-export const createMenuItem = (payload: MenuItemCreateDto) => 
+export const createMenuItem = (payload: MenuItemCreateDto) =>
     axios.post("/menu-item", payload);
 
 // Update menu item (staff/admin)
-export const updateMenuItem = (id: number, payload: MenuItemCreateDto) => 
+export const updateMenuItem = (id: number, payload: MenuItemCreateDto) =>
     axios.put(`/menu-item/${id}`, payload);
 
 // Delete menu item (staff/admin)
-export const deleteMenuItem = (id: number) => 
+export const deleteMenuItem = (id: number) =>
     axios.delete(`/menu-item/${id}`);
 
 // Menu Item Image APIs
@@ -46,5 +46,5 @@ export const uploadMenuItemImage = (menuItemId: number, file: File) => {
     });
 };
 
-export const getMenuItemImage = (menuItemId: number, imageId: number) => 
+export const getMenuItemImage = (menuItemId: number, imageId: number) =>
     axios.get(`/menuitems/${menuItemId}/images/${imageId}`);

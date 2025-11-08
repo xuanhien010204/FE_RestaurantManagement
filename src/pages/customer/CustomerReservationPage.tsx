@@ -423,15 +423,15 @@ const CustomerReservationPage: React.FC = () => {
                                     selectedReservation.status === 'Confirmed'
                                         ? 'green'
                                         : selectedReservation.status === 'Pending'
-                                        ? 'orange'
-                                        : 'red'
+                                            ? 'orange'
+                                            : 'red'
                                 }
                             >
                                 {selectedReservation.status === 'Confirmed'
                                     ? 'Đã xác nhận'
                                     : selectedReservation.status === 'Pending'
-                                    ? 'Chờ xác nhận'
-                                    : 'Đã hủy'}
+                                        ? 'Chờ xác nhận'
+                                        : 'Đã hủy'}
                             </Tag>
                         </Descriptions.Item>
                     </Descriptions>
