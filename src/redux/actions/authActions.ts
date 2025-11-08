@@ -51,6 +51,51 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+// Google Login async action
+export const loginWithGoogle = createAsyncThunk(
+    'auth/loginWithGoogle',
+    async (idToken: string, { dispatch, rejectWithValue }) => {
+        try {
+            console.log('[GoogleLogin] Starting Google login');
+            dispatch(setLoading(true));
+            dispatch(clearError());
+
+            const response = await authApi.loginWithGoogle({ idToken });
+            console.log('[GoogleLogin] API Response:', response.data);
+
+            if (response.data.success) {
+                console.log('[GoogleLogin] Google login successful, setting token');
+                // Set token for axios requests
+                setAccessToken(response.data.token);
+
+                dispatch(setUser({
+                    user: response.data.user,
+                    token: response.data.token
+                }));
+
+                return {
+                    user: response.data.user,
+                    token: response.data.token
+                };
+            } else {
+                console.log('[GoogleLogin] API returned success=false:', response.data.message);
+                dispatch(setError(response.data.message || 'Google login failed'));
+                return rejectWithValue(response.data.message || 'Google login failed');
+            }
+        } catch (error: unknown) {
+            console.error('[GoogleLogin] Error:', error);
+            const axiosError = error as { response?: { status?: number; data?: { message?: string } }; message?: string };
+            console.log('[GoogleLogin] Error response:', axiosError.response);
+            const errorMessage = axiosError.response?.data?.message || axiosError.message || 'Google login failed';
+            console.log('[GoogleLogin] Rejecting with:', errorMessage);
+            dispatch(setError(errorMessage));
+            return rejectWithValue(errorMessage);
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+);
+
 // Register async action
 export const registerUser = createAsyncThunk(
     'auth/register',
