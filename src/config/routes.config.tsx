@@ -18,6 +18,16 @@ const FeedbackManagementPage = lazy(() => import("../pages/admin/FeedbackManagem
 const PaymentManagementPage = lazy(() => import("../pages/admin/PaymentManagementPage"));
 const PaymentCreatePage = lazy(() => import("../pages/admin/PaymentCreatePage"));
 
+// Staff pages
+const StaffDashboardPage = lazy(() => import("../pages/staff/StaffDashboardPage"));
+
+// Customer pages
+const CustomerOrderPage = lazy(() => import("../pages/customer/CustomerOrderPage"));
+const CustomerPaymentPage = lazy(() => import("../pages/customer/CustomerPaymentPage"));
+const CustomerProfilePage = lazy(() => import("../pages/customer/CustomerProfilePage"));
+const CustomerFeedbackPage = lazy(() => import("../pages/customer/CustomerFeedbackPage"));
+const CustomerReservationPage = lazy(() => import("../pages/customer/CustomerReservationPage"));
+
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
     // Public routes without layout
@@ -165,10 +175,59 @@ export const routeConfig: RouteObject[] = [
         element: (
             <AppLayout>
                 <AuthGuard allowedRoles={["Admin", "Staff"]}>
-                    <div className="p-6">
-                        <h1 className="text-2xl font-bold mb-4">Staff Dashboard</h1>
-                        <p className="text-gray-600">Staff functionality coming soon...</p>
-                    </div>
+                    <StaffDashboardPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+
+    // Customer routes
+    {
+        path: "/customer/orders",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerOrderPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/customer/payments",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerPaymentPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/customer/profile",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerProfilePage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/customer/feedback",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerFeedbackPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/customer/reservations",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerReservationPage />
                 </AuthGuard>
             </AppLayout>
         ),

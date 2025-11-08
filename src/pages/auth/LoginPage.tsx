@@ -52,6 +52,58 @@ const LoginPage: React.FC = () => {
         }
     };
 
+    const onGoogleLoginSuccess = async (idToken: string) => {
+        try {
+            console.log('[LoginPage] onGoogleLoginSuccess called with idToken');
+            setLocalError(null);
+
+            // Call API directly without Redux to avoid potential loading issues
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google-login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ idToken }),
+            });
+
+            console.log('[LoginPage] Google login response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || `HTTP Error ${response.status}`;
+                console.error('[LoginPage] Google login API error:', errorMessage);
+                setLocalError(errorMessage);
+                return;
+            }
+
+            const data = await response.json();
+            console.log('[LoginPage] Google login success, data:', { success: data.success, user: data.user?.email });
+
+            if (data.success) {
+                // Save token and user to localStorage and Redux
+                localStorage.setItem('fe_restaurant_access_token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                // Update Redux store
+                dispatch({ type: 'auth/setUser', payload: { user: data.user, token: data.token } });
+
+                // Set axios token
+                const { setAccessToken } = await import('../../utils/axios');
+                setAccessToken(data.token);
+
+                console.log('[LoginPage] Google login successful, navigating to:', redirectPath);
+                navigate(redirectPath, { replace: true });
+            } else {
+                setLocalError(data.message || 'Google login failed');
+            }
+        } catch (err) {
+            console.error('[LoginPage] Google login caught error:', err);
+            const errorMessage = err instanceof Error ? err.message : 'Google login failed. Please try again.';
+            setLocalError(errorMessage);
+        }
+    };
+
     const displayError = error || localError;
 
     return (
@@ -81,16 +133,7 @@ const LoginPage: React.FC = () => {
                 <Divider>or</Divider>
 
                 <GoogleLoginButton
-                    onSuccess={async () => {
-                        try {
-                            // TODO: Implement Google login Redux action here
-                            setLocalError("Google login not yet implemented with Redux");
-                        } catch (err) {
-                            const axiosError = err as AxiosError<{ message?: string }>;
-                            const errorMessage = axiosError.response?.data?.message ?? axiosError.message ?? "Google login failed";
-                            setLocalError(errorMessage);
-                        }
-                    }}
+                    onSuccess={onGoogleLoginSuccess}
                     onError={(err) => setLocalError(String(err ?? "Google login error"))}
                 />
 

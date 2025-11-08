@@ -17,24 +17,46 @@ const MenuManagementPage: React.FC = () => {
     const [form] = Form.useForm();
 
     useEffect(() => {
-        loadMenuItems();
+        loadAllMenuItems();
     }, []);
 
-    const loadMenuItems = async (keyword?: string) => {
+    // Load all menu items from API
+    const loadAllMenuItems = async () => {
         setLoading(true);
         try {
-            const items = await menuService.searchMenuItems(keyword);
+            console.log('[MenuManagementPage] Loading all menu items...');
+            const items = await menuService.getAllMenuItems();
+            console.log('[MenuManagementPage] Loaded items:', items);
             setMenuItems(items);
-        } catch {
+        } catch (error) {
+            console.error('[MenuManagementPage] Error loading all items:', error);
             message.error('Không thể tải danh sách món ăn');
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSearch = (value: string) => {
+    // Search menu items by keyword
+    const handleSearch = async (value: string) => {
         setSearchKeyword(value);
-        loadMenuItems(value);
+        if (!value.trim()) {
+            // If search is empty, load all items
+            await loadAllMenuItems();
+        } else {
+            // Otherwise search
+            setLoading(true);
+            try {
+                console.log('[MenuManagementPage] Searching with keyword:', value);
+                const items = await menuService.searchMenuItems(value);
+                console.log('[MenuManagementPage] Search results:', items);
+                setMenuItems(items);
+            } catch (error) {
+                console.error('[MenuManagementPage] Error searching:', error);
+                message.error('Lỗi tìm kiếm');
+            } finally {
+                setLoading(false);
+            }
+        }
     };
 
     const handleCreate = () => {
@@ -56,27 +78,41 @@ const MenuManagementPage: React.FC = () => {
 
     const handleDelete = async (id: number) => {
         try {
+            console.log('[MenuManagementPage] Deleting item:', id);
             await menuService.deleteMenuItem(id);
             message.success('Xóa món ăn thành công');
-            loadMenuItems(searchKeyword);
-        } catch {
+            // Reload all items after delete
+            console.log('[MenuManagementPage] Reloading menu items after delete...');
+            await loadAllMenuItems();
+            setSearchKeyword('');
+        } catch (error) {
+            console.error('[MenuManagementPage] Error deleting:', error);
             message.error('Không thể xóa món ăn');
         }
     };
 
     const handleSubmit = async (values: menuService.MenuItemCreateRequest) => {
         try {
+            console.log('[MenuManagementPage] Submitting values:', values);
             if (editingItem) {
+                console.log('[MenuManagementPage] Updating item:', editingItem.id);
                 await menuService.updateMenuItem(editingItem.id, values);
                 message.success('Cập nhật món ăn thành công');
             } else {
-                await menuService.createMenuItem(values);
+                console.log('[MenuManagementPage] Creating new item');
+                const newItem = await menuService.createMenuItem(values);
+                console.log('[MenuManagementPage] Created item:', newItem);
                 message.success('Tạo món ăn thành công');
             }
             setIsModalVisible(false);
-            loadMenuItems(searchKeyword);
-        } catch {
-            message.error('Có lỗi xảy ra');
+            // Reload all items after submit
+            console.log('[MenuManagementPage] Reloading menu items...');
+            await loadAllMenuItems();
+            setSearchKeyword('');
+        } catch (error) {
+            console.error('[MenuManagementPage] Error submitting:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Có lỗi xảy ra';
+            message.error(`Lỗi: ${errorMessage}`);
         }
     };
 
@@ -164,7 +200,8 @@ const MenuManagementPage: React.FC = () => {
                         allowClear
                         enterButton={<SearchOutlined />}
                         size="large"
-                        onSearch={handleSearch}
+                        value={searchKeyword}
+                        onChange={(e) => handleSearch(e.target.value)}
                         style={{ width: 400 }}
                     />
                     <Button

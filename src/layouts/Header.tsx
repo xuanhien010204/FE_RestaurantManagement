@@ -56,8 +56,13 @@ const Header: React.FC = () => {
                     {/* Center nav links */}
                     <nav className="hidden md:flex gap-8 font-semibold text-slate-700">
                         <Link to="/">HOME</Link>
-                        <Link to="/about">ABOUT</Link>
-                        <Link to="/items">ITEMS</Link>
+                        {!isAuthenticated && (
+                            <>
+                                <Link to="/about">ABOUT</Link>
+                                <Link to="/items">ITEMS</Link>
+                            </>
+                        )}
+
                         {isAuthenticated && user?.role === 'Admin' && (
                             <Dropdown
                                 menu={{
@@ -72,21 +77,36 @@ const Header: React.FC = () => {
                                     ]
                                 }}
                             >
-                                <a className="cursor-pointer">ADMIN</a>
+                                <a className="cursor-pointer">QUẢN LÝ</a>
                             </Dropdown>
                         )}
                         {isAuthenticated && user?.role === 'Staff' && (
                             <Dropdown
                                 menu={{
                                     items: [
+                                        { key: 'staff-dashboard', label: 'Dashboard', onClick: () => navigate('/staff') },
                                         { key: 'staff-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
                                         { key: 'staff-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
                                         { key: 'staff-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
-                                        { key: 'staff-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
+                                        { key: 'staff-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments/create') },
                                     ]
                                 }}
                             >
-                                <a className="cursor-pointer">STAFF</a>
+                                <a className="cursor-pointer">ĐIỀU HÀNH</a>
+                            </Dropdown>
+                        )}
+                        {isAuthenticated && user?.role === 'Customer' && (
+                            <Dropdown
+                                menu={{
+                                    items: [
+                                        { key: 'customer-orders', label: 'Đơn hàng của tôi', onClick: () => navigate('/customer/orders') },
+                                        { key: 'customer-payments', label: 'Lịch sử thanh toán', onClick: () => navigate('/customer/payments') },
+                                        { key: 'customer-reservations', label: 'Đặt bàn', onClick: () => navigate('/customer/reservations') },
+                                        { key: 'customer-feedback', label: 'Phản hồi', onClick: () => navigate('/customer/feedback') },
+                                    ]
+                                }}
+                            >
+                                <a className="cursor-pointer">TÀI KHOẢN</a>
                             </Dropdown>
                         )}
                         <Link to="/contact">CONTACT</Link>
@@ -110,19 +130,29 @@ const Header: React.FC = () => {
                             <Dropdown
                                 menu={{
                                     items: [
-                                        { key: 'profile', label: 'Profile', onClick: () => navigate('/profile') },
+                                        ...(user?.role === 'Customer' ? [
+                                            { key: 'profile', label: 'Thông tin cá nhân', onClick: () => navigate('/customer/profile') },
+                                        ] : []),
+                                        ...(user?.role === 'Admin' || user?.role === 'Staff' ? [
+                                            { key: 'profile', label: 'Thông tin cá nhân', onClick: () => navigate('/profile') },
+                                        ] : []),
                                         ...(user?.role === 'Admin' ? [
                                             { type: 'divider' as const },
                                             { key: 'admin-dashboard', label: '🏠 Admin Dashboard', onClick: () => navigate('/admin') },
                                         ] : []),
                                         ...(user?.role === 'Staff' ? [
                                             { type: 'divider' as const },
-                                            { key: 'staff-menu', label: '🍽️ Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
-                                            { key: 'staff-orders', label: '📋 Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
-                                            { key: 'staff-payments', label: '💳 Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
+                                            { key: 'staff-dashboard', label: '📊 Staff Dashboard', onClick: () => navigate('/staff') },
+                                        ] : []),
+                                        ...(user?.role === 'Customer' ? [
+                                            { type: 'divider' as const },
+                                            { key: 'customer-orders', label: '� Đơn hàng', onClick: () => navigate('/customer/orders') },
+                                            { key: 'customer-payments', label: '💳 Thanh toán', onClick: () => navigate('/customer/payments') },
+                                            { key: 'customer-reservations', label: '🪑 Đặt bàn', onClick: () => navigate('/customer/reservations') },
+                                            { key: 'customer-feedback', label: '⭐ Phản hồi', onClick: () => navigate('/customer/feedback') },
                                         ] : []),
                                         { type: 'divider' as const },
-                                        { key: 'logout', label: 'Logout', onClick: handleLogout }
+                                        { key: 'logout', label: 'Đăng xuất', onClick: handleLogout }
                                     ]
                                 }}
                             >
