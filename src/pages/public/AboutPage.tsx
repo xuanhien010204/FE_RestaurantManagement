@@ -1,6 +1,5 @@
 import React from "react";
 import { FiFacebook, FiInstagram, FiLinkedin, FiTwitter, FiCheckCircle } from "react-icons/fi";
-import { branchLocations } from "../../constants/branchLocations";
 
 const heroImage = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80";
 const storyImage = "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=80";
