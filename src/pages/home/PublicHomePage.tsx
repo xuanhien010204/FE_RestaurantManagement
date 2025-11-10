@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, memo } from "react";
+import React, { useEffect, useState, memo } from "react";
 import { Row, Col, Card, Button, Typography, Input, Select, message, Empty, Spin } from "antd";
 import { SearchOutlined, PlusOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useCart } from "../../context/CartContext";
