@@ -5,6 +5,7 @@ import { AppLayout } from "../layouts";
 import { HomePage } from "../pages/home";
 import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
 import PublicGuard from "../guards/PublicGuard";
+import { PromotionManagementPage } from "../pages/admin";
 const AboutPage = lazy(() => import("../pages/public/AboutPage"));
 const ContactPage = lazy(() => import("../pages/public/ContactPage"));
 // Lazy load pages for better performance
@@ -91,7 +92,7 @@ export const routeConfig: RouteObject[] = [
         path: "/admin",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Admin"]}>
+                
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -125,9 +126,14 @@ export const routeConfig: RouteObject[] = [
                                 <p className="text-gray-600 mb-4">Theo dõi giao dịch và doanh thu</p>
                                 <a href="/admin/payments" className="text-blue-600 hover:underline">Xem chi tiết →</a>
                             </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý mã giảm giá</h3>
+                                <p className="text-gray-600 mb-4">Quản lý thông tin mã giảm giá</p>
+                                <a href="/admin/promotion" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
                         </div>
                     </div>
-                </AuthGuard>
+                
             </AppLayout>
         ),
     },
@@ -183,6 +189,16 @@ export const routeConfig: RouteObject[] = [
     },
     {
         path: "/admin/payments",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <PaymentManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+        {
+        path: "/admin/promotion",
         element: (
             <AppLayout>
                 <AuthGuard allowedRoles={["Admin", "Staff"]}>
