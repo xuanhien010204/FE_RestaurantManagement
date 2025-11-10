@@ -3,7 +3,7 @@ import { Drawer, Button, List, InputNumber, Typography, Divider, Input, message 
 import { useCart } from "../../context/CartContext";
 import { CloseOutlined, DeleteOutlined, GiftOutlined } from "@ant-design/icons";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 const CartDrawer: React.FC = () => {
     const {
