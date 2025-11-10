@@ -80,7 +80,7 @@ const PromotionManagementPage: React.FC = () => {
     form.setFieldsValue({
       code: promo.code,
       description: promo.description,
-      discountPercentage: promo.discountPercentage,
+      discount: promo.discount,
       startDate: dayjs(promo.startDate),
       endDate: dayjs(promo.endDate),
       status: promo.status,
@@ -131,10 +131,10 @@ const PromotionManagementPage: React.FC = () => {
     { title: 'Mô tả', dataIndex: 'description', key: 'description', ellipsis: true },
     {
       title: 'Giảm (%)',
-      dataIndex: 'discountPercentage',
-      key: 'discountPercentage',
+      dataIndex: 'discount',
+      key: 'discount',
       render: (value: number) => <Tag color="#FB8C00">{value}%</Tag>,
-      sorter: (a, b) => a.discountPercentage - b.discountPercentage,
+      sorter: (a, b) => a.discount - b.discount,
     },
     {
       title: 'Thời gian áp dụng',
