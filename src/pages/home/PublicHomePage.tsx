@@ -89,7 +89,7 @@ const PublicHomePage: React.FC = () => {
     const itemsPerPage = 8;
     const [hasMore, setHasMore] = useState(true);
 
-    const loadMenuItems = async (pageNumber: number, reset = false) => {
+    const loadMenuItems = async (pageNumber: number) => {
         setLoading(true);
         try {
             // Lấy tất cả menu items (hoặc có thể filter search/category nếu backend hỗ trợ)

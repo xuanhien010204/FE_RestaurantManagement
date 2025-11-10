@@ -61,7 +61,12 @@ export const uploadMenuItemImage = async (menuItemId: number, file: File) => {
     const response = await menuItemApi.uploadMenuItemImage(menuItemId, file);
     return response.data;
 };
-
+// Tìm kiếm món ăn theo tên
+export const searchMenuItems = async (query: string): Promise<MenuItem[]> => {
+    const response = await menuItemApi.searchMenuItems(query);
+    const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+    return data.map(mapBackendMenuItemToFrontend);
+};
 // Map backend menu item DTO → frontend MenuItem
 const mapBackendMenuItemToFrontend = (raw: unknown): MenuItem => {
     const backendMenuItem = raw as Record<string, unknown>;
