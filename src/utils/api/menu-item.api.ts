@@ -30,6 +30,8 @@ export const createMenuItem = (payload: MenuItemCreateDto) =>
 // Update menu item (staff/admin)
 export const updateMenuItem = (id: number, payload: MenuItemCreateDto) =>
     axios.put(`/menu-item/${id}`, payload);
+export const getMenuItemImageByMenuItemId = (id: number) =>
+    axios.get(`/menuitems/${id}/images`);
 
 // Delete menu item (staff/admin)
 export const deleteMenuItem = (id: number) =>
