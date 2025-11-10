@@ -110,212 +110,280 @@ const CustomerProfilePage: React.FC = () => {
     }
 
     return (
-        <div className="p-6">
-            <Title level={2}>My Profile</Title>
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Header Section */}
+                <div className="mb-8 text-center">
+                    <Title level={2} className="!mb-2 !text-3xl">Thông tin tài khoản</Title>
+                    <Text type="secondary" className="text-lg">Quản lý thông tin cá nhân và bảo mật của bạn</Text>
+                </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Profile Information Card */}
-                <Card
-                    title={
-                        <div className="flex items-center justify-between">
-                            <span>Profile Information</span>
-                            {!isEditing && (
-                                <Button
-                                    type="text"
-                                    icon={<EditOutlined />}
-                                    onClick={() => setIsEditing(true)}
-                                >
-                                    Edit
-                                </Button>
-                            )}
-                        </div>
-                    }
-                >
-                    <div className="mb-6 text-center">
-                        <Avatar size={80} icon={<UserOutlined />} />
-                        <div className="mt-2">
-                            <Title level={4}>{user.fullName}</Title>
-                            <Text type="secondary">{user.email}</Text>
-                        </div>
-                    </div>
-
-                    <Form
-                        form={profileForm}
-                        layout="vertical"
-                        onFinish={handleProfileUpdate}
-                        disabled={!isEditing}
-                    >
-                        <Form.Item
-                            label="Full Name"
-                            name="fullName"
-                            rules={[
-                                { required: true, message: 'Please enter your full name' },
-                            ]}
-                        >
-                            <Input prefix={<UserOutlined />} placeholder="Enter full name" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Email"
-                            name="email"
-                            rules={[
-                                { required: true, message: 'Please enter your email' },
-                                { type: 'email', message: 'Please enter a valid email' },
-                            ]}
-                        >
-                            <Input prefix={<MailOutlined />} placeholder="Enter email" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Phone Number"
-                            name="phone"
-                            rules={[
-                                { pattern: /^[0-9+\-\s()]+$/, message: 'Please enter a valid phone number' },
-                            ]}
-                        >
-                            <Input placeholder="Enter phone number" />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Address"
-                            name="address"
-                        >
-                            <Input.TextArea placeholder="Enter address" rows={3} />
-                        </Form.Item>
-
-                        {isEditing && (
-                            <Form.Item>
-                                <Space>
-                                    <Button
-                                        type="primary"
-                                        htmlType="submit"
-                                        loading={loading}
-                                        icon={<SaveOutlined />}
-                                    >
-                                        Save Changes
-                                    </Button>
-                                    <Button onClick={handleCancelEdit}>
-                                        Cancel
-                                    </Button>
-                                </Space>
-                            </Form.Item>
-                        )}
-                    </Form>
-                </Card>
-
-                {/* Account Information & Password Change */}
-                <div className="space-y-6">
-                    {/* Account Information */}
-                    <Card title="Account Information">
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <Text strong>User ID:</Text>
-                                <Text>#{user.id}</Text>
-                            </div>
-                            <div className="flex justify-between">
-                                <Text strong>Role:</Text>
-                                <Text>{user.role}</Text>
-                            </div>
-                            <div className="flex justify-between">
-                                <Text strong>Account Status:</Text>
-                                <Text type="success">Active</Text>
-                            </div>
-                            <div className="flex justify-between">
-                                <Text strong>Member Since:</Text>
-                                <Text>{dayjs(user.createdAt || new Date()).format('MMM DD, YYYY')}</Text>
-                            </div>
-                        </div>
-                    </Card>
-
-                    {/* Password Change */}
-                    <Card
-                        title={
-                            <div className="flex items-center justify-between">
-                                <span>Security</span>
-                                {!isChangingPassword && (
-                                    <Button
-                                        type="text"
-                                        icon={<LockOutlined />}
-                                        onClick={() => setIsChangingPassword(true)}
-                                    >
-                                        Change Password
-                                    </Button>
-                                )}
-                            </div>
-                        }
-                    >
-                        {!isChangingPassword ? (
-                            <div>
-                                <Text type="secondary">
-                                    Keep your account secure by using a strong password and changing it regularly.
-                                </Text>
-                                <Divider />
-                                <Text strong>Last Password Change: </Text>
-                                <Text>Unknown</Text>
-                            </div>
-                        ) : (
-                            <Form
-                                form={passwordForm}
-                                layout="vertical"
-                                onFinish={handlePasswordChange}
-                            >
-                                <Form.Item
-                                    label="Current Password"
-                                    name="currentPassword"
-                                    rules={[
-                                        { required: true, message: 'Please enter your current password' },
-                                    ]}
-                                >
-                                    <Input.Password prefix={<LockOutlined />} placeholder="Enter current password" />
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="New Password"
-                                    name="newPassword"
-                                    rules={[
-                                        { required: true, message: 'Please enter your new password' },
-                                        { min: 6, message: 'Password must be at least 6 characters' },
-                                    ]}
-                                >
-                                    <Input.Password prefix={<LockOutlined />} placeholder="Enter new password" />
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="Confirm New Password"
-                                    name="confirmPassword"
-                                    rules={[
-                                        { required: true, message: 'Please confirm your new password' },
-                                        ({ getFieldValue }) => ({
-                                            validator(_, value) {
-                                                if (!value || getFieldValue('newPassword') === value) {
-                                                    return Promise.resolve();
-                                                }
-                                                return Promise.reject(new Error('Passwords do not match'));
-                                            },
-                                        }),
-                                    ]}
-                                >
-                                    <Input.Password prefix={<LockOutlined />} placeholder="Confirm new password" />
-                                </Form.Item>
-
-                                <Form.Item>
-                                    <Space>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* Left Column - Profile Card */}
+                    <div className="lg:col-span-1">
+                        <Card className="shadow-md hover:shadow-lg transition-shadow">
+                            <div className="text-center">
+                                <div className="relative inline-block">
+                                    <Avatar 
+                                        size={120} 
+                                        icon={<UserOutlined />} 
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg"
+                                    />
+                                    {!isEditing && (
                                         <Button
                                             type="primary"
-                                            htmlType="submit"
-                                            loading={loading}
-                                            icon={<SaveOutlined />}
-                                        >
-                                            Change Password
-                                        </Button>
-                                        <Button onClick={handleCancelPasswordChange}>
-                                            Cancel
-                                        </Button>
-                                    </Space>
+                                            shape="circle"
+                                            icon={<EditOutlined />}
+                                            size="small"
+                                            className="absolute bottom-0 right-0 shadow-md"
+                                            onClick={() => setIsEditing(true)}
+                                        />
+                                    )}
+                                </div>
+                                <Title level={3} className="!mt-4 !mb-1">{user.fullName}</Title>
+                                <Text type="secondary" className="block text-lg">{user.email}</Text>
+                                <div className="mt-4 pt-4 border-t">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="text-center">
+                                            <Text type="secondary">Trạng thái</Text>
+                                            <div className="font-medium text-green-600">Active</div>
+                                        </div>
+                                        <div className="text-center">
+                                            <Text type="secondary">Vai trò</Text>
+                                            <div className="font-medium">{user.role}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
+                        {/* Account Information Card */}
+                        <Card title="Thông tin tài khoản" className="mt-6 shadow-md">
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <Text strong>Mã người dùng:</Text>
+                                    <Text className="text-gray-600">#{user.id}</Text>
+                                </div>
+                                <div className="flex justify-between items-center p-2">
+                                    <Text strong>Ngày tham gia:</Text>
+                                    <Text className="text-gray-600">{dayjs(user.createdAt || new Date()).format('DD/MM/YYYY')}</Text>
+                                </div>
+                                <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                                    <Text strong>Trạng thái:</Text>
+                                    <Text className="text-green-600 font-medium">Active</Text>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+
+                    {/* Right Column - Forms */}
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Profile Form Card */}
+                        <Card 
+                            title={
+                                <div className="flex items-center space-x-2">
+                                    <UserOutlined className="text-blue-500" />
+                                    <span>Chỉnh sửa thông tin</span>
+                                </div>
+                            }
+                            className="shadow-md"
+                        >
+                            <Form
+                                form={profileForm}
+                                layout="vertical"
+                                onFinish={handleProfileUpdate}
+                                disabled={!isEditing}
+                                className="max-w-2xl"
+                            >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <Form.Item
+                                        label="Họ và tên"
+                                        name="fullName"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập họ tên' },
+                                        ]}
+                                    >
+                                        <Input 
+                                            prefix={<UserOutlined className="text-gray-400" />} 
+                                            placeholder="Nhập họ tên"
+                                            className="rounded-lg" 
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Email"
+                                        name="email"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập email' },
+                                            { type: 'email', message: 'Email không hợp lệ' },
+                                        ]}
+                                    >
+                                        <Input 
+                                            prefix={<MailOutlined className="text-gray-400" />} 
+                                            placeholder="Nhập email"
+                                            className="rounded-lg"
+                                        />
+                                    </Form.Item>
+                                </div>
+
+                                <Form.Item
+                                    label="Số điện thoại"
+                                    name="phone"
+                                    rules={[
+                                        { pattern: /^[0-9+\-\s()]+$/, message: 'Số điện thoại không hợp lệ' },
+                                    ]}
+                                >
+                                    <Input 
+                                        placeholder="Nhập số điện thoại" 
+                                        className="rounded-lg"
+                                    />
                                 </Form.Item>
+
+                                <Form.Item
+                                    label="Địa chỉ"
+                                    name="address"
+                                >
+                                    <Input.TextArea 
+                                        placeholder="Nhập địa chỉ" 
+                                        rows={3}
+                                        className="rounded-lg"
+                                    />
+                                </Form.Item>
+
+                                {isEditing && (
+                                    <Form.Item>
+                                        <Space className="w-full justify-end">
+                                            <Button onClick={handleCancelEdit}>
+                                                Hủy
+                                            </Button>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                loading={loading}
+                                                icon={<SaveOutlined />}
+                                                className="bg-blue-500"
+                                            >
+                                                Lưu thay đổi
+                                            </Button>
+                                        </Space>
+                                    </Form.Item>
+                                )}
                             </Form>
-                        )}
-                    </Card>
+                        </Card>
+
+                        {/* Password Change Card */}
+                        <Card 
+                            title={
+                                <div className="flex items-center space-x-2">
+                                    <LockOutlined className="text-blue-500" />
+                                    <span>Bảo mật</span>
+                                </div>
+                            }
+                            className="shadow-md"
+                        >
+                            {!isChangingPassword ? (
+                                <div className="space-y-4">
+                                    <div className="bg-blue-50 p-4 rounded-lg">
+                                        <Text className="text-blue-800">
+                                            Bảo vệ tài khoản của bạn bằng mật khẩu mạnh và thay đổi định kỳ.
+                                        </Text>
+                                    </div>
+                                    <Divider className="my-4" />
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <Text strong className="block mb-1">Thay đổi mật khẩu lần cuối:</Text>
+                                            <Text type="secondary">Chưa có thông tin</Text>
+                                        </div>
+                                        <Button
+                                            type="primary"
+                                            icon={<LockOutlined />}
+                                            onClick={() => setIsChangingPassword(true)}
+                                            className="bg-blue-500"
+                                        >
+                                            Đổi mật khẩu
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Form
+                                    form={passwordForm}
+                                    layout="vertical"
+                                    onFinish={handlePasswordChange}
+                                    className="max-w-2xl"
+                                >
+                                    <Form.Item
+                                        label="Mật khẩu hiện tại"
+                                        name="currentPassword"
+                                        rules={[
+                                            { required: true, message: 'Vui lòng nhập mật khẩu hiện tại' },
+                                        ]}
+                                    >
+                                        <Input.Password 
+                                            prefix={<LockOutlined className="text-gray-400" />}
+                                            placeholder="Nhập mật khẩu hiện tại"
+                                            className="rounded-lg"
+                                        />
+                                    </Form.Item>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <Form.Item
+                                            label="Mật khẩu mới"
+                                            name="newPassword"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng nhập mật khẩu mới' },
+                                                { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' },
+                                            ]}
+                                        >
+                                            <Input.Password 
+                                                prefix={<LockOutlined className="text-gray-400" />}
+                                                placeholder="Nhập mật khẩu mới"
+                                                className="rounded-lg"
+                                            />
+                                        </Form.Item>
+
+                                        <Form.Item
+                                            label="Xác nhận mật khẩu mới"
+                                            name="confirmPassword"
+                                            rules={[
+                                                { required: true, message: 'Vui lòng xác nhận mật khẩu mới' },
+                                                ({ getFieldValue }) => ({
+                                                    validator(_, value) {
+                                                        if (!value || getFieldValue('newPassword') === value) {
+                                                            return Promise.resolve();
+                                                        }
+                                                        return Promise.reject(new Error('Mật khẩu không khớp'));
+                                                    },
+                                                }),
+                                            ]}
+                                        >
+                                            <Input.Password 
+                                                prefix={<LockOutlined className="text-gray-400" />}
+                                                placeholder="Xác nhận mật khẩu mới"
+                                                className="rounded-lg"
+                                            />
+                                        </Form.Item>
+                                    </div>
+
+                                    <Form.Item>
+                                        <Space className="w-full justify-end">
+                                            <Button onClick={handleCancelPasswordChange}>
+                                                Hủy
+                                            </Button>
+                                            <Button
+                                                type="primary"
+                                                htmlType="submit"
+                                                loading={loading}
+                                                icon={<SaveOutlined />}
+                                                className="bg-blue-500"
+                                            >
+                                                Cập nhật mật khẩu
+                                            </Button>
+                                        </Space>
+                                    </Form.Item>
+                                </Form>
+                            )}
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
