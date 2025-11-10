@@ -121,14 +121,28 @@ const PaymentCreatePage: React.FC = () => {
     const totalDetailAmount = paymentDetails.reduce((sum, detail) => sum + detail.amount, 0);
 
     return (
-        <div className="p-6">
-            <Card title="Tạo thanh toán mới" className="mb-6">
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmit}
-                    disabled={loading}
-                >
+        <div className="p-6 bg-[#FDECF5] min-h-screen flex justify-center items-start">
+            <Card
+                title={
+                    <h2 style={{
+                        textAlign: 'center',
+                        fontSize: 28,
+                        fontWeight: 'bold',
+                        color: '#C03999',
+                        margin: 0,
+                    }}>
+                         Tạo thanh toán mới
+                    </h2>
+                }
+                className="w-full max-w-4xl mt-6"
+                style={{
+                    backgroundColor: '#ffffffcc',
+                    borderRadius: 16,
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    border: 'none',
+                }}
+            >
+                <Form form={form} layout="vertical" onFinish={handleSubmit} disabled={loading}>
                     <div className="grid grid-cols-2 gap-6">
                         <Form.Item
                             label="Mã đơn hàng"
@@ -138,36 +152,22 @@ const PaymentCreatePage: React.FC = () => {
                                 { pattern: /^\d+$/, message: 'Mã đơn hàng phải là số' },
                             ]}
                         >
-                            <InputNumber
-                                placeholder="VD: 1"
-                                min={1}
-                                style={{ width: '100%' }}
-                            />
+                            <InputNumber placeholder="VD: 1" min={1} style={{ width: '100%' }} />
                         </Form.Item>
 
                         <Form.Item
                             label="Tổng số tiền"
                             name="amount"
-                            rules={[
-                                { required: true, message: 'Vui lòng nhập tổng số tiền' },
-                            ]}
+                            rules={[{ required: true, message: 'Vui lòng nhập tổng số tiền' }]}
                         >
-                            <InputNumber
-                                placeholder="VD: 100.00"
-                                min={0.01}
-                                step={0.01}
-                                style={{ width: '100%' }}
-                            />
+                            <InputNumber placeholder="VD: 100.00" min={0.01} step={0.01} style={{ width: '100%' }} />
                         </Form.Item>
                     </div>
 
                     <Divider>Chi tiết phương thức thanh toán</Divider>
 
-                    <Card className="mb-4" title="Thêm phương thức thanh toán">
-                        <Form
-                            form={detailForm}
-                            layout="vertical"
-                        >
+                    <Card className="mb-4" title="Thêm phương thức thanh toán" style={{ backgroundColor: '#FDECF5', borderRadius: 12 }}>
+                        <Form form={detailForm} layout="vertical">
                             <div className="grid grid-cols-2 gap-4">
                                 <Form.Item
                                     label="Phương thức"
@@ -188,25 +188,14 @@ const PaymentCreatePage: React.FC = () => {
                                     name="amount"
                                     rules={[{ required: true, message: 'Vui lòng nhập số tiền' }]}
                                 >
-                                    <InputNumber
-                                        placeholder="VD: 50.00"
-                                        min={0.01}
-                                        step={0.01}
-                                        style={{ width: '100%' }}
-                                    />
+                                    <InputNumber placeholder="VD: 50.00" min={0.01} step={0.01} style={{ width: '100%' }} />
                                 </Form.Item>
 
-                                <Form.Item
-                                    label="Mã giao dịch (tùy chọn)"
-                                    name="transactionCode"
-                                >
+                                <Form.Item label="Mã giao dịch (tùy chọn)" name="transactionCode">
                                     <Input placeholder="VD: TXN001" />
                                 </Form.Item>
 
-                                <Form.Item
-                                    label="Nhà cung cấp (tùy chọn)"
-                                    name="provider"
-                                >
+                                <Form.Item label="Nhà cung cấp (tùy chọn)" name="provider">
                                     <Input placeholder="VD: Visa, Momo, ACB..." />
                                 </Form.Item>
                             </div>
@@ -216,6 +205,7 @@ const PaymentCreatePage: React.FC = () => {
                                 icon={<PlusOutlined />}
                                 onClick={addPaymentDetail}
                                 block
+                                style={{ backgroundColor: '#F8C8E0', border: 'none', color: '#C03999', fontWeight: 500 }}
                             >
                                 Thêm phương thức
                             </Button>
@@ -229,11 +219,16 @@ const PaymentCreatePage: React.FC = () => {
                                 dataSource={paymentDetails.map((detail, index) => ({ ...detail, key: index }))}
                                 pagination={false}
                                 className="mb-4"
+                                style={{
+                                    backgroundColor: '#FDECF5',
+                                    borderRadius: 12,
+                                    overflow: 'hidden',
+                                }}
                             />
 
-                            <div className="bg-blue-50 p-4 rounded mb-4 text-right">
+                            <div className="bg-[#FDECF5] p-4 rounded mb-4 text-right">
                                 <div className="text-lg font-bold">
-                                    Tổng tiền chi tiết: <span className="text-green-600">${totalDetailAmount.toFixed(2)}</span>
+                                    Tổng tiền chi tiết: <span className="text-pink-600">${totalDetailAmount.toFixed(2)}</span>
                                 </div>
                                 <div className="text-sm text-gray-600">
                                     {totalDetailAmount !== form.getFieldValue('amount') && (
@@ -247,10 +242,18 @@ const PaymentCreatePage: React.FC = () => {
                     )}
 
                     <Space>
-                        <Button type="primary" htmlType="submit" loading={loading}>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={loading}
+                            style={{ backgroundColor: '#F8C8E0', border: 'none', color: '#C03999', fontWeight: 500 }}
+                        >
                             Tạo thanh toán
                         </Button>
-                        <Button onClick={() => navigate('/admin/payments')}>
+                        <Button
+                            onClick={() => navigate('/admin/payments')}
+                            style={{ backgroundColor: '#FDECF5', border: '1px solid #C03999', color: '#C03999', fontWeight: 500 }}
+                        >
                             Quay lại
                         </Button>
                     </Space>

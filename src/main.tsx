@@ -5,8 +5,6 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext"; // <-- import CartProvider
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -17,11 +15,7 @@ createRoot(rootElement).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID as string}>
       <Provider store={store}>
-        <AuthProvider>
-          <CartProvider> {/* <-- Bao bọc App bằng CartProvider */}
-            <App />
-          </CartProvider>
-        </AuthProvider>
+        <App />
       </Provider>
     </GoogleOAuthProvider>
   </StrictMode>
