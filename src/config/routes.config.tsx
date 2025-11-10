@@ -66,7 +66,7 @@ export const routeConfig: RouteObject[] = [
                                 <h3 className="text-lg font-semibold mb-2">Quản lý thực đơn</h3>
                                 <p className="text-gray-600 mb-4">Quản lý các món ăn và thức uống</p>
                                 <a href="/admin/menu" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                            </div>
+                                </div>
                             <div className="bg-white p-4 rounded-lg shadow">
                                 <h3 className="text-lg font-semibold mb-2">Quản lý nhân viên</h3>
                                 <p className="text-gray-600 mb-4">Quản lý thông tin nhân viên</p>
@@ -124,7 +124,7 @@ export const routeConfig: RouteObject[] = [
             <AppLayout>
                 <AuthGuard allowedRoles={["Admin", "Staff"]}>
                     <OrderManagementPage />
-                </AuthGuard>
+                    </AuthGuard>
             </AppLayout>
         ),
     },
@@ -245,7 +245,7 @@ export const routeConfig: RouteObject[] = [
                     </div>
                 </AuthGuard>
             </AppLayout>
-        ),
+            ),
     },
     {
         path: "/orders",

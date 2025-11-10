@@ -183,22 +183,68 @@ const StaffManagementPage: React.FC = () => {
     ];
 
     return (
-        <div className="p-6">
-            <Card title="Quản lý nhân viên" className="mb-6">
+        <div className="p-6 bg-[#D6EAF8] min-h-screen">
+            <Card
+    title={
+        <h2 style={{
+            textAlign: 'center',
+            fontSize: 28,
+            fontWeight: 'bold',
+            color: '#154360',
+            margin: 0
+        }}>
+            👩‍💼 Quản lý nhân viên
+        </h2>
+    }
+    className="mb-6"
+    style={{
+        backgroundColor: '#ffffffcc',
+        borderRadius: 16,
+        boxShadow: '0 4px 12px rgba(21, 67, 96, 0.15)',
+        border: 'none',
+    }}
+>
                 <div className="flex justify-between items-center mb-4">
                     <Search
                         placeholder="Tìm kiếm nhân viên..."
                         allowClear
-                        enterButton={<SearchOutlined />}
+                        enterButton={
+                            <Button
+                                size="large"
+                                style={{
+                                    backgroundColor: '#AED6F1',
+                                    color: '#154360',
+                                    border: 'none',
+                                    borderRadius: 10,
+                                    fontWeight: 500,
+                                }}
+                            >
+                                <SearchOutlined />
+                            </Button>
+                        }
                         size="large"
                         onSearch={handleSearch}
-                        style={{ width: 400 }}
+                        style={{
+                            width: 400,
+                            backgroundColor: '#EBF5FB',
+                            borderRadius: 12,
+                            border: 'none',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.08)',
+                        }}
                     />
+
                     <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
                         size="large"
+                        icon={<PlusOutlined />}
                         onClick={handleCreate}
+                        style={{
+                            backgroundColor: '#AED6F1',
+                            color: '#154360',
+                            border: 'none',
+                            borderRadius: 10,
+                            fontWeight: 500,
+                            boxShadow: '0 3px 6px rgba(0,0,0,0.1)',
+                        }}
                     >
                         Thêm nhân viên
                     </Button>
@@ -215,6 +261,11 @@ const StaffManagementPage: React.FC = () => {
                         showQuickJumper: true,
                         showTotal: (total) => `Tổng ${total} nhân viên`,
                     }}
+                    style={{
+                        backgroundColor: '#ffffffb0',
+                        borderRadius: 12,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                    }}
                 />
             </Card>
 
@@ -224,6 +275,10 @@ const StaffManagementPage: React.FC = () => {
                 onCancel={() => setIsModalVisible(false)}
                 footer={null}
                 width={600}
+                bodyStyle={{
+                    backgroundColor: '#EBF5FB',
+                    borderRadius: 12,
+                }}
             >
                 <Form
                     form={form}
@@ -284,12 +339,19 @@ const StaffManagementPage: React.FC = () => {
 
                     <Form.Item className="mb-0">
                         <Space>
-                            <Button type="primary" htmlType="submit">
+                            <Button
+                                htmlType="submit"
+                                style={{
+                                    backgroundColor: '#AED6F1',
+                                    color: '#154360',
+                                    border: 'none',
+                                    borderRadius: 8,
+                                    fontWeight: 500,
+                                }}
+                            >
                                 {editingStaff ? 'Cập nhật' : 'Tạo mới'}
                             </Button>
-                            <Button onClick={() => setIsModalVisible(false)}>
-                                Hủy
-                            </Button>
+                            <Button onClick={() => setIsModalVisible(false)}>Hủy</Button>
                         </Space>
                     </Form.Item>
                 </Form>

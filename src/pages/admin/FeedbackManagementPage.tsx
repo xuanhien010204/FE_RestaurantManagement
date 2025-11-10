@@ -62,21 +62,11 @@ const FeedbackManagementPage: React.FC = () => {
         }
     };
 
-    const getApprovalColor = (isApproved: boolean) => {
-        return isApproved ? 'green' : 'orange';
-    };
-
-    const getApprovalText = (isApproved: boolean) => {
-        return isApproved ? 'Đã duyệt' : 'Chờ duyệt';
-    };
+    const getApprovalColor = (isApproved: boolean) => (isApproved ? 'green' : 'orange');
+    const getApprovalText = (isApproved: boolean) => (isApproved ? 'Đã duyệt' : 'Chờ duyệt');
 
     const columns: ColumnsType<Feedback> = [
-        {
-            title: 'ID',
-            dataIndex: 'id',
-            key: 'id',
-            width: 70,
-        },
+        { title: 'ID', dataIndex: 'id', key: 'id', width: 70 },
         {
             title: 'Khách hàng',
             key: 'customer',
@@ -87,9 +77,7 @@ const FeedbackManagementPage: React.FC = () => {
                         <div className="font-medium">
                             {record.user?.fullName || `Khách hàng #${record.userId}`}
                         </div>
-                        <div className="text-gray-500 text-xs">
-                            {record.user?.email}
-                        </div>
+                        <div className="text-gray-500 text-xs">{record.user?.email}</div>
                     </div>
                 </Space>
             ),
@@ -101,7 +89,7 @@ const FeedbackManagementPage: React.FC = () => {
             render: (rating: number) => (
                 <Space>
                     <Rate disabled defaultValue={rating} style={{ fontSize: 14 }} />
-                    <span className="text-yellow-600">
+                    <span className="text-purple-600">
                         <StarFilled /> {rating}/5
                     </span>
                 </Space>
@@ -120,9 +108,7 @@ const FeedbackManagementPage: React.FC = () => {
             dataIndex: 'isApproved',
             key: 'isApproved',
             render: (isApproved: boolean) => (
-                <Tag color={getApprovalColor(isApproved)}>
-                    {getApprovalText(isApproved)}
-                </Tag>
+                <Tag color={getApprovalColor(isApproved)}>{getApprovalText(isApproved)}</Tag>
             ),
             filters: [
                 { text: 'Đã duyệt', value: true },
@@ -142,11 +128,7 @@ const FeedbackManagementPage: React.FC = () => {
             key: 'reply',
             render: (_, record) => (
                 <Space>
-                    {record.reply ? (
-                        <Tag color="blue">Đã phản hồi</Tag>
-                    ) : (
-                        <Tag color="gray">Chưa phản hồi</Tag>
-                    )}
+                    {record.reply ? <Tag color="blue">Đã phản hồi</Tag> : <Tag color="gray">Chưa phản hồi</Tag>}
                 </Space>
             ),
         },
@@ -155,12 +137,7 @@ const FeedbackManagementPage: React.FC = () => {
             key: 'actions',
             render: (_, record) => (
                 <Space>
-                    <Button
-                        type="text"
-                        icon={<EyeOutlined />}
-                        onClick={() => handleViewFeedback(record)}
-                        size="small"
-                    >
+                    <Button type="text" icon={<EyeOutlined />} onClick={() => handleViewFeedback(record)} size="small">
                         Xem
                     </Button>
                     <Button
@@ -168,7 +145,7 @@ const FeedbackManagementPage: React.FC = () => {
                         icon={<MessageOutlined />}
                         onClick={() => handleReply(record)}
                         size="small"
-                        className="text-blue-600"
+                        className="text-purple-600"
                     >
                         Phản hồi
                     </Button>
@@ -178,25 +155,53 @@ const FeedbackManagementPage: React.FC = () => {
     ];
 
     return (
-        <div className="p-6">
-            <Card title="Quản lý đánh giá khách hàng" className="mb-6">
-                <div className="flex justify-between items-center mb-4">
-                    <div className="flex gap-4">
-                        <div className="text-gray-600">
+        <div className="p-6" style={{ backgroundColor: '#F4ECF7', minHeight: '100vh' }}>
+    <Card
+        title={
+            <h2
+                style={{
+                    textAlign: 'center',
+                    fontSize: 28,
+                    fontWeight: 'bold',
+                    color: '#6C3483', 
+                    margin: 0,
+                }}
+            >
+                💜 Quản lý đánh giá khách hàng
+            </h2>
+        }
+        className="mb-6"
+        style={{
+            backgroundColor: '#ffffffb8',
+            borderRadius: 16,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+            border: 'none',
+        }}
+    >
+                <div className="flex justify-between items-center mb-6">
+                    <div className="flex gap-4 text-gray-700 font-medium">
+                        <div>
                             Tổng: <span className="font-bold">{feedbacks.length}</span> đánh giá
                         </div>
-                        <div className="text-gray-600">
-                            Đã duyệt: <span className="font-bold text-green-600">
-                                {feedbacks.filter(f => f.isApproved).length}
-                            </span>
+                        <div>
+                            Đã duyệt: <span className="font-bold text-green-600">{feedbacks.filter(f => f.isApproved).length}</span>
                         </div>
-                        <div className="text-gray-600">
-                            Chờ duyệt: <span className="font-bold text-orange-600">
-                                {feedbacks.filter(f => !f.isApproved).length}
-                            </span>
+                        <div>
+                            Chờ duyệt: <span className="font-bold text-orange-600">{feedbacks.filter(f => !f.isApproved).length}</span>
                         </div>
                     </div>
-                    <Button type="primary" onClick={loadFeedbacks}>
+                    <Button
+                        type="primary"
+                        onClick={loadFeedbacks}
+                        style={{
+                            backgroundColor: '#D8BFD8',
+                            color: '#4B0082',
+                            border: 'none',
+                            fontWeight: 600,
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#CDA0D9')}
+                        onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#D8BFD8')}
+                    >
                         Làm mới
                     </Button>
                 </div>
@@ -206,6 +211,7 @@ const FeedbackManagementPage: React.FC = () => {
                     dataSource={feedbacks}
                     loading={loading}
                     rowKey="id"
+                    className="rounded-lg shadow-sm"
                     pagination={{
                         pageSize: 10,
                         showSizeChanger: true,
@@ -243,7 +249,7 @@ const FeedbackManagementPage: React.FC = () => {
                             </div>
                             <div className="flex items-center space-x-2 mb-2">
                                 <Rate disabled defaultValue={selectedFeedback.rating} />
-                                <span className="text-yellow-600 font-medium">
+                                <span className="text-purple-600 font-medium">
                                     {selectedFeedback.rating}/5 sao
                                 </span>
                             </div>
@@ -259,7 +265,7 @@ const FeedbackManagementPage: React.FC = () => {
                         {selectedFeedback.reply && (
                             <div>
                                 <div className="font-medium mb-2">Phản hồi từ nhà hàng:</div>
-                                <div className="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
+                                <div className="bg-purple-50 p-3 rounded border-l-4 border-purple-400">
                                     {selectedFeedback.reply}
                                 </div>
                                 {selectedFeedback.repliedAt && (
@@ -288,30 +294,32 @@ const FeedbackManagementPage: React.FC = () => {
                 footer={null}
                 width={500}
             >
-                <Form
-                    form={form}
-                    layout="vertical"
-                    onFinish={handleSubmitReply}
-                >
+                <Form form={form} layout="vertical" onFinish={handleSubmitReply}>
                     <Form.Item
                         name="reply"
                         label="Nội dung phản hồi"
                         rules={[{ required: true, message: 'Vui lòng nhập nội dung phản hồi' }]}
                     >
-                        <TextArea
-                            rows={4}
-                            placeholder="Nhập phản hồi của bạn..."
-                        />
+                        <TextArea rows={4} placeholder="Nhập phản hồi của bạn..." />
                     </Form.Item>
 
                     <Form.Item className="mb-0">
                         <Space>
-                            <Button type="primary" htmlType="submit">
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                style={{
+                                    backgroundColor: '#D8BFD8',
+                                    color: '#4B0082',
+                                    border: 'none',
+                                    fontWeight: 600,
+                                }}
+                                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#CDA0D9')}
+                                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#D8BFD8')}
+                            >
                                 Gửi phản hồi
                             </Button>
-                            <Button onClick={() => setIsReplyModalVisible(false)}>
-                                Hủy
-                            </Button>
+                            <Button onClick={() => setIsReplyModalVisible(false)}>Hủy</Button>
                         </Space>
                     </Form.Item>
                 </Form>
