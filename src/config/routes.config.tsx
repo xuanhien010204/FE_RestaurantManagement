@@ -4,7 +4,7 @@ import AuthGuard from "../guards/AuthGuard";
 import { AppLayout } from "../layouts";
 import { HomePage } from "../pages/home";
 import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
-
+import PublicGuard from "../guards/PublicGuard";
 // Lazy load pages for better performance
 const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
@@ -33,15 +33,30 @@ export const routeConfig: RouteObject[] = [
     // Public routes without layout
     {
         path: "/login",
-        element: <LoginPage />,
+        element: (
+            <AppLayout>
+                <PublicGuard>
+                    <LoginPage />
+                </PublicGuard>
+            </AppLayout>
+        ),
     },
     {
         path: "/unauthorized",
-        element: <UnauthorizedPage />,
+        element:
+            <AppLayout>
+                <UnauthorizedPage />
+            </AppLayout>
     },
     {
         path: "/register",
-        element: <RegisterPage />,
+        element: (
+            <AppLayout>
+                <PublicGuard>
+                    <RegisterPage />
+                </PublicGuard>
+            </AppLayout>
+        ),
     },
     // Public home page with layout
     {
