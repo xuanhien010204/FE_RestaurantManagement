@@ -1,64 +1,67 @@
 import React from "react";
+import logo from "../../public/images/logo.png"; // đường dẫn tới logo của bạn
 
 const Footer: React.FC = () => {
     const year = new Date().getFullYear();
 
-    const locations = [
-        {
-            title: "Thuyền Quán",
-            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
-            hours: "09:00 AM - 12:00 PM",
-            phone: "+039 2818 8285",
-            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
-        },
-        {
-            title: "Thuyền Quán",
-            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
-            hours: "09:00 AM - 12:00 PM",
-            phone: "+039 2818 8285",
-            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
-        },
-        {
-            title: "Thuyền Quán",
-            address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
-            hours: "09:00 AM - 12:00 PM",
-            phone: "+039 2818 8285",
-            map: "https://www.google.com/maps/place/194+Xu%C3%A2n+Di%E1%BB%87u,+Tr%E1%BA%A7n+Ph%C3%BA,+Quy+Nh%C6%A1n,+B%C3%ACnh+%C4%90%E1%BB%8Bnh,+Vi%E1%BB%87t+Nam/@13.7681663,109.2282249,855m/data=!3m2!1e3!4b1!4m6!3m5!1s0x316f6c895f264d8f:0x9abe74855d59ce2e!8m2!3d13.7681663!4d109.2307998!16s%2Fg%2F11kq4zmy91?entry=ttu&g_ep=EgoyMDI1MTAwMS4wIKXMDSoASAFQAw%3D%3D",
-    
-        },
-    ];
+    const location = {
+        title: "Thuyền Quán",
+        address: "194 Xuân Diệu, Phường Quy Nhơn, tỉnh Gia Lai",
+        hours: "09:00 AM - 12:00 PM",
+        phone: "+039 2818 8285",
+        mapEmbed:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3723.370670663887!2d109.22822491537805!3d13.768166290256333!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x316f6c895f264d8f%3A0x9abe74855d59ce2e!2s194%20Xu%C3%A2n%20Di%E1%BB%87u%2C%20Tr%E1%BA%A7n%20Ph%C3%BA%2C%20Quy%20Nh%C6%A1n%2C%20B%C3%ACnh%20%C4%90%E1%BB%8Bnh%2C%20Vi%E1%BB%87t%20Nam!5e0!3m2!1sen!2s!4v1699648141234!5m2!1sen!2s",
+    };
 
     return (
-        <footer>
+        <footer className="mt-10 font-sans">
+            {/* Top Footer Section */}
             <div className="bg-red-600 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6">
-                        {locations.map((loc) => (
-                            <div key={loc.title} className="p-4 bg-red-500 rounded shadow-inner">
-                                <h3 className="text-xl font-semibold mb-2">{loc.title}</h3>
-                                <p className="text-sm opacity-90">{loc.address}</p>
-                                <p className="text-sm opacity-80 mt-1">Hours: {loc.hours}</p>
-                                <p className="text-sm opacity-90 mt-2">Phone: <a className="underline" href={`tel:${loc.phone}`}>{loc.phone}</a></p>
-                                <p className="mt-3">
-                                    <a
-                                        className="inline-block bg-white text-red-600 px-3 py-1 rounded hover:underline"
-                                        href={loc.map}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Click to View Google Map
-                                    </a>
-                                </p>
-                            </div>
-                        ))}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row gap-6 items-center md:items-start">
+
+                    {/* Left: Info Card with Logo */}
+                    <div className="w-full md:w-1/2 flex flex-col md:flex-row items-center md:items-start gap-4 bg-red-500 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                        <img
+                            src={logo}
+                            alt="Logo"
+                            className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0"
+                        />
+                        <div className="flex-1">
+                            <h3 className="text-3xl font-bold mb-2">{location.title}</h3>
+                            <p className="text-xl mb-1">{location.address}</p>
+                            <p className="text-xl mb-1">Hours: {location.hours}</p>
+                            <p className="text-xl">
+                                Phone:{" "}
+                                <a
+                                    href={`tel:${location.phone}`}
+                                    className="underline hover:text-yellow-300 transition-colors duration-200"
+                                >
+                                    {location.phone}
+                                </a>
+                            </p>
+                        </div>
                     </div>
+
+                    {/* Right: Google Map */}
+                    <div className="w-full md:w-1/2 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition duration-300">
+                        <iframe
+                            src={location.mapEmbed}
+                            width="100%"
+                            height="250"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                            title="Google Map"
+                        ></iframe>
+                    </div>
+
                 </div>
             </div>
 
-            <div className="bg-slate-800 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 text-center text-sm">
-                    <span>Copyright © {year} | Shaheen Uddin Ahmad</span>
-                </div>
+            {/* Bottom Footer */}
+            <div className="bg-slate-800 text-white text-center py-4 text-sm">
+                <span>Copyright © {year} | Shaheen Uddin Ahmad</span>
             </div>
         </footer>
     );

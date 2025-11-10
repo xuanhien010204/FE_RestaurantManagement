@@ -42,19 +42,7 @@ const teamMembers = [
 const AboutPage: React.FC = () => {
     return (
         <div className="bg-[#FFF8F3] text-slate-900">
-            {/* Hero */}
-            <section className="relative min-h-[360px] flex items-center justify-center overflow-hidden">
-                <img src={heroImage} alt="Restaurant table" className="absolute inset-0 h-full w-full object-cover" />
-                <div className="absolute inset-0 bg-slate-900/70" />
-                <div className="relative max-w-4xl text-center text-white px-4 py-16">
-                    <p className="uppercase tracking-[0.3em] text-sm">About Us</p>
-                    <h1 className="text-4xl md:text-5xl font-semibold mt-4">Kết nối vị giác, nâng tầm trải nghiệm</h1>
-                    <p className="mt-6 text-base md:text-lg text-slate-200">
-                        Chúng tôi bắt đầu từ một căn bếp nhỏ với đam mê phục vụ những món ăn chân thành, nay trở thành điểm hẹn của
-                        những tín đồ ẩm thực muốn tận hưởng khoảnh khắc trọn vẹn bên người thân.
-                    </p>
-                </div>
-            </section>
+
 
             {/* Intro */}
             <section className="max-w-6xl mx-auto px-4 py-16 grid md:grid-cols-2 gap-10 items-center">
@@ -157,27 +145,17 @@ const AboutPage: React.FC = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Branches */}
-            <section className="bg-red-600 text-white">
-                <div className="max-w-6xl mx-auto px-4 py-14 text-center space-y-8">
-                    <h3 className="text-3xl font-semibold">Our Branch</h3>
-                    <div className="grid gap-6 md:grid-cols-3">
-                        {branchLocations.map(branch => (
-                            <div key={branch.name} className="rounded-2xl bg-red-500/40 border border-white/30 p-6 flex flex-col gap-3">
-                                <h4 className="text-xl font-semibold">{branch.name}</h4>
-                                <p className="text-sm">{branch.address}</p>
-                                <div className="text-sm">
-                                    <div>{branch.hours}</div>
-                                    <div>{branch.phone}</div>
-                                </div>
-                                <a href={branch.mapLink} target="_blank" rel="noreferrer" className="mt-2 text-sm font-semibold text-yellow-100 hover:text-white">
-                                    Click to View Google Map
-                                </a>
-                            </div>
-                        ))}
-                    </div>
-                    <p className="text-sm text-white/80">Copyright © 2025 | Shaheen Uddin Ahmad</p>
+            {/* Hero */}
+            <section className="relative min-h-[360px] flex items-center justify-center overflow-hidden">
+                <img src={heroImage} alt="Restaurant table" className="absolute inset-0 h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-slate-900/70" />
+                <div className="relative max-w-4xl text-center text-white px-4 py-16">
+                    <p className="uppercase tracking-[0.3em] text-sm">About Us</p>
+                    <h1 className="text-4xl md:text-5xl font-semibold mt-4">Kết nối vị giác, nâng tầm trải nghiệm</h1>
+                    <p className="mt-6 text-base md:text-lg text-slate-200">
+                        Chúng tôi bắt đầu từ một căn bếp nhỏ với đam mê phục vụ những món ăn chân thành, nay trở thành điểm hẹn của
+                        những tín đồ ẩm thực muốn tận hưởng khoảnh khắc trọn vẹn bên người thân.
+                    </p>
                 </div>
             </section>
         </div>
