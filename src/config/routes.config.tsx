@@ -5,6 +5,8 @@ import { AppLayout } from "../layouts";
 import { HomePage } from "../pages/home";
 import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
 import PublicGuard from "../guards/PublicGuard";
+const AboutPage = lazy(() => import("../pages/public/AboutPage"));
+const ContactPage = lazy(() => import("../pages/public/ContactPage"));
 // Lazy load pages for better performance
 const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
@@ -64,6 +66,22 @@ export const routeConfig: RouteObject[] = [
         element: (
             <AppLayout>
                 <HomePage />
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/about",
+        element: (
+            <AppLayout>
+                <AboutPage />
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/contact",
+        element: (
+            <AppLayout>
+                <ContactPage />
             </AppLayout>
         ),
     },
