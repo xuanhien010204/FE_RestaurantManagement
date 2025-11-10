@@ -1,9 +1,14 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Badge, Avatar, Dropdown, Space } from "antd";
-import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Badge, Avatar, Dropdown, Space, Drawer, List, InputNumber, Typography, message } from "antd";
 import { useAppDispatch, useAppSelector } from "../redux/app/hook";
 import { logout } from "../redux/slices/authSlice";
+import { useCart } from "../context/CartContext";
+
+// React Icons
+import { FiShoppingCart, FiUser, FiPhone, FiClock, FiPlus, FiMinus, FiX } from "react-icons/fi";
+
+const { Text } = Typography;
 
 const Header: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -12,32 +17,37 @@ const Header: React.FC = () => {
     const isAuthenticated = !!token && !!user;
     const navigate = useNavigate();
 
-    const handleLogout = async () => {
-        try {
-            dispatch(logout());
-            navigate('/login');
-        } catch (err) {
-            console.error('Logout failed', err);
+    const { items: cartItems, totalItems, totalPrice, drawerOpen, openDrawer, closeDrawer, updateQuantity, removeItem } = useCart();
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+    };
+
+    const handleCheckout = () => {
+        if (!isAuthenticated) {
+            message.info("Vui lòng đăng nhập để đặt hàng");
+            navigate("/login");
+            return;
         }
+        if (cartItems.length === 0) {
+            message.warning("Giỏ hàng trống");
+            return;
+        }
+        navigate("/orders", { state: { cartItems } });
     };
 
     return (
-        <header>
-            {/* Top red strip */}
+        <header className="shadow-md">
+            {/* Top strip */}
             <div className="bg-red-600 text-white text-xs">
                 <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-1">
                     <div className="flex items-center gap-6 text-sm">
-                        <div className="flex items-center gap-2">
-                            <span className="inline-block">⏰</span>
-                            <span>7:30 AM - 9:30 PM</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="inline-block">📞</span>
-                            <span>+880 1630 225 015</span>
-                        </div>
+                        <div className="flex items-center gap-1"><FiClock /> 7:30 AM - 9:30 PM</div>
+                        <div className="flex items-center gap-1"><FiPhone /> +880 1630 225 015</div>
                     </div>
                     <div>
-                        <Link to="/register" className="uppercase font-semibold tracking-wide">REGISTER</Link>
+                        {!isAuthenticated && <Link to="/register" className="uppercase font-semibold tracking-wide">REGISTER</Link>}
                     </div>
                 </div>
             </div>
@@ -45,10 +55,10 @@ const Header: React.FC = () => {
             {/* Main navbar */}
             <div className="bg-[#FFF8F3] border-b border-gray-200">
                 <div className="max-w-7xl mx-auto flex items-center justify-between px-4 h-20">
-                    {/* Left: logo */}
+                    {/* Logo */}
                     <Link to="/" className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center">
-                            <span className="text-2xl">🍽️</span>
+                            <FiShoppingCart className="text-2xl text-orange-500" />
                         </div>
                         <span className="text-lg font-bold text-slate-900 hidden sm:inline">Thuyền Quán</span>
                     </Link>
@@ -56,109 +66,50 @@ const Header: React.FC = () => {
                     {/* Center nav links */}
                     <nav className="hidden md:flex gap-8 font-semibold text-slate-700">
                         <Link to="/">HOME</Link>
-                        {!isAuthenticated && (
-                            <>
-                                <Link to="/about">ABOUT</Link>
-                                <Link to="/items">ITEMS</Link>
-                            </>
-                        )}
-
+                        {!isAuthenticated && <>
+                            <Link to="/about">ABOUT</Link>
+                            <Link to="/contact">CONTACT</Link>
+                        </>}
                         {isAuthenticated && user?.role === 'Admin' && (
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        { key: 'admin-dashboard', label: 'Dashboard', onClick: () => navigate('/admin') },
-                                        { key: 'admin-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
-                                        { key: 'admin-staff', label: 'Quản lý nhân viên', onClick: () => navigate('/admin/staff') },
-                                        { key: 'admin-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
-                                        { key: 'admin-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
-                                        { key: 'admin-feedback', label: 'Quản lý đánh giá', onClick: () => navigate('/admin/feedback') },
-                                        { key: 'admin-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments') },
-                                    ]
-                                }}
-                            >
+                            <Dropdown menu={{
+                                items: [
+                                    { key: 'admin-dashboard', label: 'Dashboard', onClick: () => navigate('/admin') },
+                                    { key: 'admin-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
+                                ]
+                            }}>
                                 <a className="cursor-pointer">QUẢN LÝ</a>
                             </Dropdown>
                         )}
-                        {isAuthenticated && user?.role === 'Staff' && (
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        { key: 'staff-dashboard', label: 'Dashboard', onClick: () => navigate('/staff') },
-                                        { key: 'staff-menu', label: 'Quản lý thực đơn', onClick: () => navigate('/admin/menu') },
-                                        { key: 'staff-orders', label: 'Quản lý đơn hàng', onClick: () => navigate('/admin/orders') },
-                                        { key: 'staff-tables', label: 'Quản lý bàn ăn', onClick: () => navigate('/admin/tables') },
-                                        { key: 'staff-payments', label: 'Quản lý thanh toán', onClick: () => navigate('/admin/payments/create') },
-                                    ]
-                                }}
-                            >
-                                <a className="cursor-pointer">ĐIỀU HÀNH</a>
-                            </Dropdown>
-                        )}
                         {isAuthenticated && user?.role === 'Customer' && (
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        { key: 'customer-orders', label: 'Đơn hàng của tôi', onClick: () => navigate('/customer/orders') },
-                                        { key: 'customer-payments', label: 'Lịch sử thanh toán', onClick: () => navigate('/customer/payments') },
-                                        { key: 'customer-reservations', label: 'Đặt bàn', onClick: () => navigate('/customer/reservations') },
-                                        { key: 'customer-feedback', label: 'Phản hồi', onClick: () => navigate('/customer/feedback') },
-                                    ]
-                                }}
-                            >
+                            <Dropdown menu={{
+                                items: [
+                                    { key: 'customer-orders', label: 'Đơn hàng của tôi', onClick: () => navigate('/customer/orders') },
+                                ]
+                            }}>
                                 <a className="cursor-pointer">TÀI KHOẢN</a>
                             </Dropdown>
                         )}
-                        <Link to="/contact">CONTACT</Link>
                     </nav>
 
-                    {/* Right side: cart/delivery/login */}
+                    {/* Right side: cart & login/logout */}
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-3">
-                            <Badge count={2} size="small">
-                                <Button shape="circle" size="large" className="bg-slate-100">
-                                    <ShoppingCartOutlined />
-                                </Button>
-                            </Badge>
-                            <div className="hidden sm:block text-xs text-slate-700">
-                                <div className="font-semibold">Delivery Order</div>
-                                <div className="text-gray-500">+880 1630 225 015</div>
-                            </div>
-                        </div>
+                        <Badge count={totalItems} size="small">
+                            <Button shape="circle" size="large" className="bg-slate-100" onClick={openDrawer}>
+                                <FiShoppingCart className="text-lg" />
+                            </Button>
+                        </Badge>
 
                         {isAuthenticated ? (
-                            <Dropdown
-                                menu={{
-                                    items: [
-                                        ...(user?.role === 'Customer' ? [
-                                            { key: 'profile', label: 'Thông tin cá nhân', onClick: () => navigate('/customer/profile') },
-                                        ] : []),
-                                        ...(user?.role === 'Admin' || user?.role === 'Staff' ? [
-                                            { key: 'profile', label: 'Thông tin cá nhân', onClick: () => navigate('/profile') },
-                                        ] : []),
-                                        ...(user?.role === 'Admin' ? [
-                                            { type: 'divider' as const },
-                                            { key: 'admin-dashboard', label: '🏠 Admin Dashboard', onClick: () => navigate('/admin') },
-                                        ] : []),
-                                        ...(user?.role === 'Staff' ? [
-                                            { type: 'divider' as const },
-                                            { key: 'staff-dashboard', label: '📊 Staff Dashboard', onClick: () => navigate('/staff') },
-                                        ] : []),
-                                        ...(user?.role === 'Customer' ? [
-                                            { type: 'divider' as const },
-                                            { key: 'customer-orders', label: '� Đơn hàng', onClick: () => navigate('/customer/orders') },
-                                            { key: 'customer-payments', label: '💳 Thanh toán', onClick: () => navigate('/customer/payments') },
-                                            { key: 'customer-reservations', label: '🪑 Đặt bàn', onClick: () => navigate('/customer/reservations') },
-                                            { key: 'customer-feedback', label: '⭐ Phản hồi', onClick: () => navigate('/customer/feedback') },
-                                        ] : []),
-                                        { type: 'divider' as const },
-                                        { key: 'logout', label: 'Đăng xuất', onClick: handleLogout }
-                                    ]
-                                }}
-                            >
+                            <Dropdown menu={{
+                                items: [
+                                    { key: 'profile', label: 'Thông tin cá nhân', onClick: () => navigate('/customer/profile') },
+                                    { type: 'divider' as const },
+                                    { key: 'logout', label: 'Đăng xuất', onClick: handleLogout }
+                                ]
+                            }}>
                                 <Button type="text">
                                     <Space>
-                                        <Avatar icon={<UserOutlined />} />
+                                        <Avatar icon={<FiUser />} />
                                         <span className="hidden sm:inline">{user?.fullName ?? 'User'}</span>
                                     </Space>
                                 </Button>
@@ -169,6 +120,65 @@ const Header: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Drawer giỏ hàng */}
+            <Drawer
+                title="Giỏ hàng của bạn"
+                placement="right"
+                onClose={closeDrawer}
+                open={drawerOpen}
+                width={400}
+            >
+                {cartItems.length === 0 ? (
+                    <Text>Giỏ hàng trống</Text>
+                ) : (
+                    <div>
+                        <List
+                            dataSource={cartItems}
+                            renderItem={item => (
+                                <List.Item
+                                    key={item.id}
+                                    actions={[
+                                        <Button size="small" icon={<FiMinus />} onClick={() => updateQuantity(item.id, item.quantity - 1)} />,
+                                        <InputNumber
+                                            size="small"
+                                            min={1}
+                                            max={100}
+                                            value={item.quantity}
+                                            onChange={(val) => val && updateQuantity(item.id, val)}
+                                        />,
+                                        <Button size="small" icon={<FiPlus />} onClick={() => updateQuantity(item.id, item.quantity + 1)} />,
+                                        <Button size="small" danger icon={<FiX />} onClick={() => removeItem(item.id)} />
+                                    ]}
+                                >
+                                    <List.Item.Meta
+                                        title={item.name}
+                                        description={
+                                            <div className="flex items-center gap-1">
+                                                <span>{item.price.toLocaleString("vi-VN")}đ</span>
+                                            </div>
+                                        }
+                                    />
+                                    <Text>{(item.price * item.quantity).toLocaleString("vi-VN")}đ</Text>
+                                </List.Item>
+                            )}
+                        />
+
+                        <div className="mt-4">
+                            <Text strong>Tổng cộng ({totalItems} món): {totalPrice.toLocaleString("vi-VN")}đ</Text>
+                            <Button
+                                type="primary"
+                                size="large"
+                                block
+                                onClick={handleCheckout}
+                                className="mt-2 bg-orange-500 border-orange-500"
+                            >
+                                {isAuthenticated ? "Thanh toán" : "Đăng nhập để đặt hàng"}
+                            </Button>
+                        </div>
+                    </div>
+                )}
+            </Drawer>
         </header>
     );
 };

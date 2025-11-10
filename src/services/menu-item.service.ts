@@ -13,68 +13,63 @@ const MenuItemStatusMap: Record<number, MenuItem["status"]> = {
     1: "OutOfStock"
 };
 
-// Get all menu items
+// Lấy menu items theo page và limit (8 món / lần)
+export const getMenuItemsByPage = async (page: number, limit: number): Promise<MenuItem[]> => {
+    const response = await menuItemApi.getAllMenuItems();
+    const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+    const items = data.slice((page - 1) * limit, page * limit);
+    return items.map(mapBackendMenuItemToFrontend);
+};
+
+// Lấy tất cả menu items (không dùng cho public list lớn)
 export const getAllMenuItems = async (): Promise<MenuItem[]> => {
     const response = await menuItemApi.getAllMenuItems();
-    console.log('[MenuItemService] getAllMenuItems response:', response);
-    // Response can be array or wrapped in data property
     const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
     return data.map(mapBackendMenuItemToFrontend);
 };
 
-// Search menu items by keyword
-export const searchMenuItems = async (keyword?: string): Promise<MenuItem[]> => {
-    const response = await menuItemApi.searchMenuItems(keyword);
-    console.log('[MenuItemService] searchMenuItems response:', response);
-    const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
-    return data.map(mapBackendMenuItemToFrontend);
+// Lấy ảnh menu item theo menuItemId
+export const getMenuItemImageByMenuItemId = async (menuItemId: number) => {
+    const response = await menuItemApi.getMenuItemImageByMenuItemId(menuItemId);
+    return response.data;
 };
 
-// Create menu item
+// Tạo món ăn
 export const createMenuItem = async (payload: MenuItemCreateRequest): Promise<MenuItem> => {
-    console.log('[MenuItemService] createMenuItem payload:', payload);
     const response = await menuItemApi.createMenuItem(payload);
-    console.log('[MenuItemService] createMenuItem response:', response);
-    // Backend returns 201 Created with the created item in response.data
     return mapBackendMenuItemToFrontend(response.data);
 };
 
-// Get menu item by ID
+// Lấy món ăn theo ID
 export const getMenuItemById = async (id: number): Promise<MenuItem> => {
     const response = await menuItemApi.getMenuItemById(id);
     return mapBackendMenuItemToFrontend(response.data);
 };
 
-// Update menu item
+// Cập nhật món ăn
 export const updateMenuItem = async (id: number, payload: MenuItemCreateRequest): Promise<void> => {
-    console.log('[MenuItemService] updateMenuItem - id:', id, 'payload:', payload);
     await menuItemApi.updateMenuItem(id, payload);
-    console.log('[MenuItemService] updateMenuItem success');
-    // Backend returns 204 NoContent, no need to process response
 };
 
-// Delete menu item
+// Xóa món ăn
 export const deleteMenuItem = async (id: number): Promise<void> => {
-    console.log('[MenuItemService] deleteMenuItem - id:', id);
     await menuItemApi.deleteMenuItem(id);
-    console.log('[MenuItemService] deleteMenuItem success');
-    // Backend returns 204 NoContent, no need to process response
 };
 
+// Upload ảnh món ăn
 export const uploadMenuItemImage = async (menuItemId: number, file: File) => {
     const response = await menuItemApi.uploadMenuItemImage(menuItemId, file);
     return response.data;
 };
-
-export const getMenuItemImage = async (menuItemId: number, imageId: number) => {
-    const response = await menuItemApi.getMenuItemImage(menuItemId, imageId);
-    return response.data;
+// Tìm kiếm món ăn theo tên
+export const searchMenuItems = async (query: string): Promise<MenuItem[]> => {
+    const response = await menuItemApi.searchMenuItems(query);
+    const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+    return data.map(mapBackendMenuItemToFrontend);
 };
-
-// Map backend menu item DTO to frontend MenuItem type
+// Map backend menu item DTO → frontend MenuItem
 const mapBackendMenuItemToFrontend = (raw: unknown): MenuItem => {
     const backendMenuItem = raw as Record<string, unknown>;
-
     return {
         id: Number(backendMenuItem.id ?? 0),
         name: String(backendMenuItem.name ?? ""),
@@ -82,6 +77,6 @@ const mapBackendMenuItemToFrontend = (raw: unknown): MenuItem => {
         price: Number(backendMenuItem.price ?? 0),
         category: backendMenuItem.category as string | undefined,
         status: MenuItemStatusMap[Number(backendMenuItem.status ?? 0)] ?? "Available",
-        images: backendMenuItem.images as MenuItem["images"],
+        images: backendMenuItem.images as MenuItem["images"] ?? [],
     };
 };
