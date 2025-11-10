@@ -239,7 +239,7 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/profile",
         element: (
             <AppLayout>
-                <AuthGuard  allowedRoles={[ "Staff"]}>
+                <AuthGuard allowedRoles={["Customer", "Admin"]}>
                     <CustomerProfilePage />
                 </AuthGuard>
             </AppLayout>
