@@ -221,12 +221,13 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/profile",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard  allowedRoles={[ "Staff"]}>
                     <CustomerProfilePage />
                 </AuthGuard>
             </AppLayout>
         ),
     },
+    
     {
         path: "/customer/feedback",
         element: (
