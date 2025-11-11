@@ -1,5 +1,6 @@
 import * as paymentApi from "../utils/api/payment.api";
 import type { Payment, PaymentStatistics, PaymentMethod, PaymentStatus } from "../types/Payment";
+import type { Order } from "../types/Order";
 
 export interface PaymentDetailCreateRequest {
     method: number; // 0=Cash, 1=CreditCard, 2=BankTransfer, 3=EWallet, 4=Voucher
@@ -27,6 +28,13 @@ const PaymentStatusMap: Record<number, PaymentStatus> = {
     0: "Pending",
     1: "Completed",
     2: "Failed"
+};
+
+const OrderStatusMap: Record<number, Order["status"]> = {
+    0: "Pending",
+    1: "InProgress",
+    2: "Completed",
+    3: "Cancelled"
 };
 
 export const createPayment = async (payload: PaymentCreateRequest) => {
@@ -96,6 +104,9 @@ const mapBackendPaymentToFrontend = (raw: unknown): Payment => {
     return {
         id: Number(backendPayment.id ?? 0),
         orderId: Number(backendPayment.orderId ?? 0),
+        order: backendPayment.order && typeof backendPayment.order === "object"
+            ? mapBackendOrderForPayment(backendPayment.order as Record<string, unknown>)
+            : undefined,
         amount: Number(backendPayment.amount ?? 0),
         status: PaymentStatusMap[Number(backendPayment.status ?? 0)] ?? "Pending",
         paymentDate: String(backendPayment.paymentDate ?? new Date().toISOString()),
@@ -110,5 +121,16 @@ const mapBackendPaymentToFrontend = (raw: unknown): Payment => {
                 extraInfo: detail.extraInfo as string | undefined,
             }))
             : [],
+    };
+};
+
+const mapBackendOrderForPayment = (raw: Record<string, unknown>): Order => {
+    return {
+        id: Number(raw.id ?? 0),
+        userId: Number(raw.userId ?? 0),
+        tableId: Number(raw.tableId ?? 0),
+        orderTime: String(raw.orderTime ?? new Date().toISOString()),
+        status: OrderStatusMap[Number(raw.status ?? 0)] ?? "Pending",
+        totalAmount: Number(raw.totalAmount ?? 0),
     };
 };

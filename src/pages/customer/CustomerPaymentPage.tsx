@@ -4,6 +4,7 @@ import { EyeOutlined, DownloadOutlined, SearchOutlined, FileTextOutlined } from 
 import type { ColumnsType } from 'antd/es/table';
 import type { Payment } from '../../types/Payment';
 import * as paymentService from '../../services/payment.service';
+import * as orderService from '../../services/order.service';
 import { useAppSelector } from '../../redux/app/hook';
 import dayjs from 'dayjs';
 
@@ -31,13 +32,23 @@ const CustomerPaymentPage: React.FC = () => {
 
         setLoading(true);
         try {
-            // Get all payments and filter by current user
-            const allPayments = await paymentService.getAllPayments();
+            // Fetch payments alongside orders once for filtering
+            const [allPayments, allOrders] = await Promise.all([
+                paymentService.getAllPayments(),
+                orderService.getAllOrders()
+            ]);
+
+            // Determine which orders belong to current user
+            const userOrderIds = new Set(
+                allOrders
+                    .filter(order => order.userId === user.id)
+                    .map(order => order.id)
+            );
 
             // Filter payments by current user's orders
             let userPayments = allPayments.filter(payment => {
-                // Assuming payment has order information that contains userId
-                return payment.order?.userId === user.id;
+                if (payment.order?.userId === user.id) return true;
+                return payment.orderId ? userOrderIds.has(payment.orderId) : false;
             });
 
             // Apply search filter (search by payment ID, amount, or transaction code from payment details)
@@ -447,3 +458,4 @@ const CustomerPaymentPage: React.FC = () => {
 };
 
 export default CustomerPaymentPage;
+

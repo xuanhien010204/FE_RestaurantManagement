@@ -2,6 +2,8 @@ import React from "react";
 import { Drawer, Button, List, InputNumber, Typography, Divider, Input, message } from "antd";
 import { useCart } from "../../context/CartContext";
 import { CloseOutlined, DeleteOutlined, GiftOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../redux/app/hook";
 
 const { Text } = Typography;
 
@@ -21,9 +23,29 @@ const CartDrawer: React.FC = () => {
         applyPromotion,
         removePromotion,
     } = useCart();
+    const navigate = useNavigate();
+    const authState = useAppSelector(state => state.auth);
+    const isAuthenticated = Boolean(authState?.token && authState?.user);
 
     const [promoCode, setPromoCode] = React.useState("");
     const [loadingPromo, setLoadingPromo] = React.useState(false);
+
+    const handleCheckout = () => {
+        if (items.length === 0) {
+            message.warning("Gio hang cua ban dang trong");
+            return;
+        }
+
+        if (!isAuthenticated) {
+            message.warning("Vui long dang nhap de tiep tuc thanh toan");
+            closeDrawer();
+            navigate("/login");
+            return;
+        }
+
+        closeDrawer();
+        navigate("/customer/payments", { state: { fromCart: true } });
+    };
 
     const handleApplyPromo = async () => {
         if (!promoCode) return message.warning("Vui lòng nhập mã giảm giá");
@@ -145,6 +167,7 @@ const CartDrawer: React.FC = () => {
                 size="large"
                 className="mt-6 bg-orange-500"
                 disabled={items.length === 0}
+                onClick={handleCheckout}
             >
                 Đặt hàng
             </Button>

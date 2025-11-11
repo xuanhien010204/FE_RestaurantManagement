@@ -1,10 +1,26 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Input, DatePicker, Select, Tag, Modal, Typography, Space, Pagination, message, Card, Form, Rate } from 'antd';
+import {
+    Table,
+    Button,
+    Input,
+    DatePicker,
+    Select,
+    Tag,
+    Modal,
+    Typography,
+    Space,
+    Pagination,
+    message,
+    Card,
+    Form,
+    Rate,
+} from 'antd';
 import { EyeOutlined, PlusOutlined, SearchOutlined, StarOutlined } from '@ant-design/icons';
 import type { ColumnsType } from 'antd/es/table';
 import type { Feedback } from '../../types/Feedback';
 import { useAppSelector } from '../../redux/app/hook';
 import dayjs from 'dayjs';
+import axios from 'axios';
 
 const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
@@ -30,79 +46,31 @@ const CustomerFeedbackPage: React.FC = () => {
     const [createModalVisible, setCreateModalVisible] = useState(false);
     const [createForm] = Form.useForm<FeedbackFormData>();
 
-    const user = useAppSelector(state => state.auth.user);
+    const user = useAppSelector((state) => state.auth.user);
 
+    // Fetch API
     const fetchFeedbacks = useCallback(async () => {
         if (!user?.id) return;
-
         setLoading(true);
         try {
-            // Mock data for now - this would normally call an API
-            const mockFeedbacks: Feedback[] = [
-                {
-                    id: 1,
-                    userId: user.id,
-                    orderId: 1,
-                    rating: 5,
-                    comment: 'Excellent food and service! Highly recommend the pasta.',
-                    createdAt: dayjs().subtract(2, 'days').toISOString(),
-                    isApproved: true,
-                    reply: 'Thank you for your kind words!',
-                    repliedAt: dayjs().subtract(1, 'day').toISOString(),
-                },
-                {
-                    id: 2,
-                    userId: user.id,
-                    orderId: 2,
-                    rating: 4,
-                    comment: 'Good experience overall, but the wait time was a bit long.',
-                    createdAt: dayjs().subtract(1, 'week').toISOString(),
-                    isApproved: false,
-                },
-                {
-                    id: 3,
-                    userId: user.id,
-                    orderId: 3,
-                    rating: 3,
-                    comment: 'Average food quality. The service could be improved.',
-                    createdAt: dayjs().subtract(2, 'weeks').toISOString(),
-                    isApproved: true,
-                },
-            ];
+            const params: any = {
+                userId: user.id,
+                page: currentPage,
+                pageSize,
+            };
 
-            // Filter feedbacks by current user
-            let userFeedbacks = mockFeedbacks.filter(feedback => feedback.userId === user.id);
-
-            // Apply search filter
-            if (searchKeyword) {
-                userFeedbacks = userFeedbacks.filter(feedback =>
-                    (feedback.comment?.toLowerCase().includes(searchKeyword.toLowerCase()) || false) ||
-                    feedback.id.toString().includes(searchKeyword)
-                );
-            }
-
-            // Apply rating filter
-            if (ratingFilter) {
-                userFeedbacks = userFeedbacks.filter(feedback => feedback.rating.toString() === ratingFilter);
-            }
-
-            // Apply date range filter
+            if (searchKeyword) params.search = searchKeyword;
+            if (ratingFilter) params.rating = ratingFilter;
             if (dateRange) {
-                userFeedbacks = userFeedbacks.filter(feedback => {
-                    const feedbackDate = dayjs(feedback.createdAt);
-                    return feedbackDate.isAfter(dateRange[0].startOf('day')) &&
-                        feedbackDate.isBefore(dateRange[1].endOf('day'));
-                });
+                params.from = dateRange[0].startOf('day').toISOString();
+                params.to = dateRange[1].endOf('day').toISOString();
             }
 
-            // Apply pagination
-            const startIndex = (currentPage - 1) * pageSize;
-            const paginatedFeedbacks = userFeedbacks.slice(startIndex, startIndex + pageSize);
-
-            setFeedbacks(paginatedFeedbacks);
-            setTotal(userFeedbacks.length);
+            const { data } = await axios.get('/api/feedbacks', { params });
+            setFeedbacks(data.items || []);
+            setTotal(data.total || 0);
         } catch (error) {
-            console.error('Error fetching feedbacks:', error);
+            console.error(error);
             message.error('Failed to load feedbacks');
         } finally {
             setLoading(false);
@@ -113,21 +81,33 @@ const CustomerFeedbackPage: React.FC = () => {
         fetchFeedbacks();
     }, [fetchFeedbacks]);
 
+    //  Create Feedback
     const handleCreateFeedback = async (values: FeedbackFormData) => {
         if (!user?.id) return;
-
         try {
-            // This would normally call the API to create feedback
-            message.info('Feedback submission functionality would be implemented here');
-            console.log('Creating feedback:', values);
-
+            await axios.post('/api/feedbacks', {
+                userId: user.id,
+                ...values,
+            });
             message.success('Feedback submitted successfully');
             setCreateModalVisible(false);
             createForm.resetFields();
             fetchFeedbacks();
         } catch (error) {
-            console.error('Error creating feedback:', error);
+            console.error(error);
             message.error('Failed to submit feedback');
+        }
+    };
+
+    //  Update Feedback (optional if allowed)
+    const handleUpdateFeedback = async (id: number, updatedData: Partial<Feedback>) => {
+        try {
+            await axios.put(`/api/feedbacks/${id}`, updatedData);
+            message.success('Feedback updated successfully');
+            fetchFeedbacks();
+        } catch (error) {
+            console.error(error);
+            message.error('Failed to update feedback');
         }
     };
 
@@ -136,13 +116,8 @@ const CustomerFeedbackPage: React.FC = () => {
         setDetailModalVisible(true);
     };
 
-    const getStatusColor = (isApproved: boolean) => {
-        return isApproved ? 'green' : 'orange';
-    };
-
-    const getStatusText = (isApproved: boolean) => {
-        return isApproved ? 'Approved' : 'Pending';
-    };
+    const getStatusColor = (isApproved: boolean) => (isApproved ? 'green' : 'orange');
+    const getStatusText = (isApproved: boolean) => (isApproved ? 'Approved' : 'Pending');
 
     const getRatingColor = (rating: number) => {
         if (rating >= 4) return 'green';
@@ -163,7 +138,7 @@ const CustomerFeedbackPage: React.FC = () => {
             dataIndex: 'orderId',
             key: 'orderId',
             width: 100,
-            render: (orderId: number) => orderId ? `#${orderId.toString().slice(-6)}` : 'General',
+            render: (orderId: number) => (orderId ? `#${orderId}` : 'General'),
         },
         {
             title: 'Rating',
@@ -173,7 +148,15 @@ const CustomerFeedbackPage: React.FC = () => {
             render: (rating: number) => (
                 <div className="flex items-center space-x-2">
                     <Rate disabled value={rating} style={{ fontSize: 14 }} />
-                    <span className={`font-medium ${getRatingColor(rating) === 'green' ? 'text-green-600' : getRatingColor(rating) === 'orange' ? 'text-orange-600' : 'text-red-600'}`}>
+                    <span
+                        className={`font-medium ${
+                            getRatingColor(rating) === 'green'
+                                ? 'text-green-600'
+                                : getRatingColor(rating) === 'orange'
+                                ? 'text-orange-600'
+                                : 'text-red-600'
+                        }`}
+                    >
                         {rating}/5
                     </span>
                 </div>
@@ -224,16 +207,14 @@ const CustomerFeedbackPage: React.FC = () => {
     ];
 
     const handleDateRangeChange = (dates: [dayjs.Dayjs | null, dayjs.Dayjs | null] | null) => {
-        if (dates && dates[0] && dates[1]) {
-            setDateRange([dates[0], dates[1]]);
-        } else {
-            setDateRange(null);
-        }
+        if (dates && dates[0] && dates[1]) setDateRange([dates[0], dates[1]]);
+        else setDateRange(null);
     };
 
-    const averageRating = feedbacks.length > 0
-        ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(1)
-        : '0.0';
+    const averageRating =
+        feedbacks.length > 0
+            ? (feedbacks.reduce((sum, f) => sum + f.rating, 0) / feedbacks.length).toFixed(1)
+            : '0.0';
 
     return (
         <div className="p-6">
@@ -248,13 +229,11 @@ const CustomerFeedbackPage: React.FC = () => {
                 </Button>
             </div>
 
-            {/* Feedback Stats */}
+            {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                 <Card>
                     <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">
-                            {feedbacks.length}
-                        </div>
+                        <div className="text-2xl font-bold text-blue-600">{feedbacks.length}</div>
                         <div className="text-gray-600">Total Feedback</div>
                     </div>
                 </Card>
@@ -270,7 +249,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 <Card>
                     <div className="text-center">
                         <div className="text-2xl font-bold text-green-600">
-                            {feedbacks.filter(f => f.isApproved).length}
+                            {feedbacks.filter((f) => f.isApproved).length}
                         </div>
                         <div className="text-gray-600">Approved</div>
                     </div>
@@ -278,7 +257,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 <Card>
                     <div className="text-center">
                         <div className="text-2xl font-bold text-orange-600">
-                            {feedbacks.filter(f => !f.isApproved).length}
+                            {feedbacks.filter((f) => !f.isApproved).length}
                         </div>
                         <div className="text-gray-600">Pending</div>
                     </div>
@@ -286,7 +265,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 <Card>
                     <div className="text-center">
                         <div className="text-2xl font-bold text-blue-600">
-                            {feedbacks.filter(f => f.reply).length}
+                            {feedbacks.filter((f) => f.reply).length}
                         </div>
                         <div className="text-gray-600">With Reply</div>
                     </div>
@@ -312,11 +291,11 @@ const CustomerFeedbackPage: React.FC = () => {
                         style={{ width: '100%' }}
                     >
                         <Option value="">All Ratings</Option>
-                        <Option value="5">5 Stars</Option>
-                        <Option value="4">4 Stars</Option>
-                        <Option value="3">3 Stars</Option>
-                        <Option value="2">2 Stars</Option>
-                        <Option value="1">1 Star</Option>
+                        {[5, 4, 3, 2, 1].map((r) => (
+                            <Option key={r} value={r.toString()}>
+                                {r} Stars
+                            </Option>
+                        ))}
                     </Select>
 
                     <RangePicker
@@ -332,7 +311,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Feedbacks Table */}
+            {/* Table */}
             <div className="bg-white rounded-lg shadow">
                 <Table
                     columns={columns}
@@ -358,7 +337,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Create Feedback Modal */}
+            {/* Create Modal */}
             <Modal
                 title="Submit New Feedback"
                 open={createModalVisible}
@@ -369,11 +348,7 @@ const CustomerFeedbackPage: React.FC = () => {
                 footer={null}
                 width={600}
             >
-                <Form
-                    form={createForm}
-                    layout="vertical"
-                    onFinish={handleCreateFeedback}
-                >
+                <Form form={createForm} layout="vertical" onFinish={handleCreateFeedback}>
                     <Form.Item
                         label="Order ID (Optional)"
                         name="orderId"
@@ -408,10 +383,12 @@ const CustomerFeedbackPage: React.FC = () => {
 
                     <Form.Item className="mb-0">
                         <Space className="w-full justify-end">
-                            <Button onClick={() => {
-                                setCreateModalVisible(false);
-                                createForm.resetFields();
-                            }}>
+                            <Button
+                                onClick={() => {
+                                    setCreateModalVisible(false);
+                                    createForm.resetFields();
+                                }}
+                            >
                                 Cancel
                             </Button>
                             <Button type="primary" htmlType="submit">
@@ -422,9 +399,11 @@ const CustomerFeedbackPage: React.FC = () => {
                 </Form>
             </Modal>
 
-            {/* Feedback Details Modal */}
+            {/* Detail Modal */}
             <Modal
-                title={`Feedback Details - #${selectedFeedback?.id?.toString().padStart(4, '0')}`}
+                title={`Feedback Details - #${selectedFeedback?.id
+                    ?.toString()
+                    .padStart(4, '0')}`}
                 open={detailModalVisible}
                 onCancel={() => setDetailModalVisible(false)}
                 footer={[
@@ -439,7 +418,11 @@ const CustomerFeedbackPage: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <strong>Order ID:</strong>
-                                <div>{selectedFeedback.orderId ? `#${selectedFeedback.orderId.toString().slice(-6)}` : 'General Feedback'}</div>
+                                <div>
+                                    {selectedFeedback.orderId
+                                        ? `#${selectedFeedback.orderId}`
+                                        : 'General Feedback'}
+                                </div>
                             </div>
                             <div>
                                 <strong>Status:</strong>
@@ -452,7 +435,11 @@ const CustomerFeedbackPage: React.FC = () => {
                             <div>
                                 <strong>Rating:</strong>
                                 <div className="flex items-center space-x-2">
-                                    <Rate disabled value={selectedFeedback.rating} style={{ fontSize: 16 }} />
+                                    <Rate
+                                        disabled
+                                        value={selectedFeedback.rating}
+                                        style={{ fontSize: 16 }}
+                                    />
                                     <span className="font-medium text-lg">
                                         {selectedFeedback.rating}/5
                                     </span>
@@ -460,7 +447,11 @@ const CustomerFeedbackPage: React.FC = () => {
                             </div>
                             <div>
                                 <strong>Submitted:</strong>
-                                <div>{dayjs(selectedFeedback.createdAt).format('MMM DD, YYYY HH:mm')}</div>
+                                <div>
+                                    {dayjs(selectedFeedback.createdAt).format(
+                                        'MMM DD, YYYY HH:mm'
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -478,7 +469,10 @@ const CustomerFeedbackPage: React.FC = () => {
                                     <Text>{selectedFeedback.reply}</Text>
                                     {selectedFeedback.repliedAt && (
                                         <div className="text-sm text-gray-500 mt-2">
-                                            Responded on {dayjs(selectedFeedback.repliedAt).format('MMM DD, YYYY HH:mm')}
+                                            Responded on{' '}
+                                            {dayjs(selectedFeedback.repliedAt).format(
+                                                'MMM DD, YYYY HH:mm'
+                                            )}
                                         </div>
                                     )}
                                 </div>
