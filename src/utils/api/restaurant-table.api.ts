@@ -9,6 +9,7 @@ export type RestaurantTableCreateDto = {
 
 export const getTableById = (id: number) => axios.get(`/restaurant-table/${id}`);
 export const getAllTables = () => axios.get("/restaurant-table");
+export const getAllTablesAvailable = () => axios.get("/restaurant-table/available");
 export const searchTablesByNumber = (tableNumber: number) => axios.get(`/restaurant-table/search?TableNumber=${tableNumber}`);
 export const createTable = (payload: RestaurantTableCreateDto) => axios.post("/restaurant-table", payload);
 export const updateTable = (id: number, payload: RestaurantTableCreateDto) => axios.put(`/restaurant-table/${id}`, payload);

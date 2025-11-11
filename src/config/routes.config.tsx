@@ -5,6 +5,7 @@ import { AppLayout } from "../layouts";
 import { HomePage } from "../pages/home";
 import { UnauthorizedPage, NotFoundPage } from "../pages/errors";
 import PublicGuard from "../guards/PublicGuard";
+
 const AboutPage = lazy(() => import("../pages/public/AboutPage"));
 const ContactPage = lazy(() => import("../pages/public/ContactPage"));
 // Lazy load pages for better performance
@@ -29,7 +30,7 @@ const CustomerPaymentPage = lazy(() => import("../pages/customer/CustomerPayment
 const CustomerProfilePage = lazy(() => import("../pages/customer/CustomerProfilePage"));
 const CustomerFeedbackPage = lazy(() => import("../pages/customer/CustomerFeedbackPage"));
 const CustomerReservationPage = lazy(() => import("../pages/customer/CustomerReservationPage"));
-
+const CustomerBookingTablePage = lazy(() => import("../pages/customer/BookingTablePage"));
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
     // Public routes without layout
@@ -85,7 +86,14 @@ export const routeConfig: RouteObject[] = [
             </AppLayout>
         ),
     },
-
+    {
+        path: "/booking",
+        element: (
+            <AppLayout>
+                <CustomerBookingTablePage />
+            </AppLayout>
+        ),
+    },
     // Admin routes
     {
         path: "/admin",
@@ -99,7 +107,7 @@ export const routeConfig: RouteObject[] = [
                                 <h3 className="text-lg font-semibold mb-2">Quản lý thực đơn</h3>
                                 <p className="text-gray-600 mb-4">Quản lý các món ăn và thức uống</p>
                                 <a href="/admin/menu" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                                </div>
+                            </div>
                             <div className="bg-white p-4 rounded-lg shadow">
                                 <h3 className="text-lg font-semibold mb-2">Quản lý nhân viên</h3>
                                 <p className="text-gray-600 mb-4">Quản lý thông tin nhân viên</p>
@@ -157,7 +165,7 @@ export const routeConfig: RouteObject[] = [
             <AppLayout>
                 <AuthGuard allowedRoles={["Admin", "Staff"]}>
                     <OrderManagementPage />
-                    </AuthGuard>
+                </AuthGuard>
             </AppLayout>
         ),
     },
@@ -245,7 +253,7 @@ export const routeConfig: RouteObject[] = [
             </AppLayout>
         ),
     },
-    
+
     {
         path: "/customer/feedback",
         element: (
@@ -279,7 +287,7 @@ export const routeConfig: RouteObject[] = [
                     </div>
                 </AuthGuard>
             </AppLayout>
-            ),
+        ),
     },
     {
         path: "/orders",
