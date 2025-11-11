@@ -10,7 +10,7 @@ interface PublicGuardProps {
 
 const PublicGuard: React.FC<PublicGuardProps> = ({ children, redirectPath = "/" }) => {
     const authState = useAppSelector(state => state.auth);
-    const { user, token } = authState as { user: any | null; token: string | null };
+    const { user, token } = authState as { user: { fullName: string; role: string } | null; token: string | null };
     const isAuthenticated = !!token && !!user;
 
     if (isAuthenticated) {

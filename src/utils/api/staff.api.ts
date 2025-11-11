@@ -31,7 +31,11 @@ export type StaffResponse = {
 
 export const createStaff = (payload: StaffCreateRequest) => axios.post<StaffResponse>("/staff", payload);
 export const getAllStaff = () => axios.get("/staff");
+export const getPaginatedStaff = (page: number = 1, pageSize: number = 10) =>
+    axios.get(`/staff/paginated?page=${page}&pageSize=${pageSize}`);
 export const getStaffById = (id: number) => axios.get(`/staff/${id}`);
 export const updateStaff = (id: number, payload: StaffCreateRequest) => axios.put(`/staff/${id}`, payload);
 export const deleteStaff = (id: number) => axios.delete(`/staff/${id}`);
 export const searchStaff = (keyword: string) => axios.get(`/staff/search?keyword=${encodeURIComponent(keyword)}`);
+export const searchPaginatedStaff = (keyword: string, page: number = 1, pageSize: number = 10) =>
+    axios.get(`/staff/search/paginated?keyword=${encodeURIComponent(keyword)}&page=${page}&pageSize=${pageSize}`);

@@ -29,6 +29,10 @@ export const createPayment = (payload: PaymentCreateDto) => axios.post("/payment
 // Get all payments (Admin/Staff)
 export const getAllPayments = () => axios.get("/payment");
 
+// Get paginated payments (Admin/Staff)
+export const getPaginatedPayments = (page: number = 1, pageSize: number = 10) =>
+    axios.get(`/payment/paginated?page=${page}&pageSize=${pageSize}`);
+
 // Get payment by ID
 export const getPaymentById = (id: number) => axios.get(`/payment/${id}`);
 
@@ -48,6 +52,10 @@ export const deletePayment = (id: number) => axios.delete(`/payment/${id}`);
 // Search by transaction code (Admin/Staff)
 export const searchPaymentsByTransactionCode = (transactionCode: string) =>
     axios.get(`/payment/search?transactionCode=${encodeURIComponent(transactionCode)}`);
+
+// Search by transaction code with pagination (Admin/Staff)
+export const searchPaginatedPayments = (transactionCode: string, page: number = 1, pageSize: number = 10) =>
+    axios.get(`/payment/search/paginated?transactionCode=${encodeURIComponent(transactionCode)}&page=${page}&pageSize=${pageSize}`);
 
 // Get payments by date range (Admin/Staff)
 export const getPaymentsByDateRange = (startDate: string, endDate: string) =>

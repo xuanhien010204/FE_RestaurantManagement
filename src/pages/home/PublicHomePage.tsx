@@ -100,19 +100,8 @@ const PublicHomePage: React.FC = () => {
             try {
                 const items = await menuItemService.getAllMenuItems();
 
-                // Gọi ảnh song song
-                const itemsWithImages = await Promise.all(
-                    items.map(async (item) => {
-                        try {
-                            const images = await menuItemService.getMenuItemImageByMenuItemId(item.id);
-                            return { ...item, images };
-                        } catch {
-                            return { ...item, images: [] };
-                        }
-                    })
-                );
-
-                const available = itemsWithImages.filter((i) => i.status === "Available");
+                // Backend đã trả về images trong MenuItem response
+                const available = items.filter((i) => i.status === "Available");
                 const uniqueCats = Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]));
 
                 setCategories(uniqueCats);

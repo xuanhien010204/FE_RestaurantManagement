@@ -19,6 +19,8 @@ export type FeedbackUpdateDto = {
 };
 
 export const getAllFeedbacks = () => axios.get("/feedback");
+export const getPaginatedFeedbacks = (page: number = 1, pageSize: number = 10) =>
+    axios.get(`/feedback/paginated?page=${page}&pageSize=${pageSize}`);
 export const getFeedbackById = (id: number) => axios.get(`/feedback/${id}`);
 export const createFeedback = (payload: CreateFeedbackDto) => axios.post("/feedback", payload);
 export const updateFeedback = (id: number, payload: FeedbackUpdateDto) => axios.put(`/feedback/${id}`, payload);

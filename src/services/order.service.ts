@@ -2,7 +2,7 @@ import * as orderApi from "../utils/api/order.api";
 import type { Order } from "../types/Order";
 
 export interface OrderCreateRequest {
-    tableId: number;
+    tableId: number | 0;
     items: {
         menuItemId: number;
         quantity: number;
@@ -58,6 +58,14 @@ export const getOrderStatus = async (id: number): Promise<{ status: Order["statu
     return {
         status: OrderStatusMap[Number(response.data.status ?? 0)] ?? "Pending"
     };
+};
+
+export const updateOrderStatus = async (id: number, status: Order["status"]): Promise<void> => {
+    const statusValue = Object.entries(OrderStatusMap).find(([, v]) => v === status)?.[0];
+    if (statusValue === undefined) {
+        throw new Error(`Invalid status: ${status}`);
+    }
+    await orderApi.updateOrderStatus(id, Number(statusValue));
 };
 
 // Map backend order DTO to frontend Order type

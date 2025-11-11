@@ -24,6 +24,17 @@ export const getAllCustomers = async (): Promise<User[]> => {
     return response.data.map(mapBackendCustomerToFrontend);
 };
 
+export const getPaginatedCustomers = async (page: number = 1, pageSize: number = 10) => {
+    const response = await customerApi.getPaginatedCustomers(page, pageSize);
+    return {
+        items: response.data.items?.map(mapBackendCustomerToFrontend) ?? [],
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
+};
+
 export const getCustomerById = async (id: number): Promise<User> => {
     const response = await customerApi.getCustomerById(id);
     return mapBackendCustomerToFrontend(response.data);
@@ -42,6 +53,17 @@ export const deleteCustomer = async (id: number) => {
 export const searchCustomers = async (keyword: string): Promise<User[]> => {
     const response = await customerApi.searchCustomers(keyword);
     return response.data.map(mapBackendCustomerToFrontend);
+};
+
+export const searchPaginatedCustomers = async (keyword: string, page: number = 1, pageSize: number = 10) => {
+    const response = await customerApi.searchPaginatedCustomers(keyword, page, pageSize);
+    return {
+        items: response.data.items?.map(mapBackendCustomerToFrontend) ?? [],
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
 };
 
 // Map backend customer DTO to frontend User type

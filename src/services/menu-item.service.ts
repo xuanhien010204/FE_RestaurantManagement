@@ -67,6 +67,30 @@ export const searchMenuItems = async (query: string): Promise<MenuItem[]> => {
     const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
     return data.map(mapBackendMenuItemToFrontend);
 };
+
+// Get paginated menu items
+export const getPaginatedMenuItems = async (page: number = 1, pageSize: number = 10) => {
+    const response = await menuItemApi.getPaginatedMenuItems(page, pageSize);
+    return {
+        items: (response.data.items ?? []).map(mapBackendMenuItemToFrontend),
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
+};
+
+// Search paginated menu items
+export const searchPaginatedMenuItems = async (keyword: string, page: number = 1, pageSize: number = 10) => {
+    const response = await menuItemApi.searchPaginatedMenuItems(keyword, page, pageSize);
+    return {
+        items: (response.data.items ?? []).map(mapBackendMenuItemToFrontend),
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
+};
 // Map backend menu item DTO → frontend MenuItem
 const mapBackendMenuItemToFrontend = (raw: unknown): MenuItem => {
     const backendMenuItem = raw as Record<string, unknown>;

@@ -13,6 +13,7 @@ const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
 
 // Admin pages
+const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
 const MenuManagementPage = lazy(() => import("../pages/admin/MenuManagementPage"));
 const StaffManagementPage = lazy(() => import("../pages/admin/StaffManagementPage"));
 const OrderManagementPage = lazy(() => import("../pages/admin/OrderManagementPage"));
@@ -23,6 +24,9 @@ const PaymentCreatePage = lazy(() => import("../pages/admin/PaymentCreatePage"))
 
 // Staff pages
 const StaffDashboardPage = lazy(() => import("../pages/staff/StaffDashboardPage"));
+const StaffOrderManagementPage = lazy(() => import("../pages/staff/StaffOrderManagementPage"));
+const StaffMenuViewPage = lazy(() => import("../pages/staff/StaffMenuViewPage"));
+const StaffTableManagementPage = lazy(() => import("../pages/staff/StaffTableManagementPage"));
 
 // Customer pages
 const CustomerOrderPage = lazy(() => import("../pages/customer/CustomerOrderPage"));
@@ -30,6 +34,7 @@ const CustomerPaymentPage = lazy(() => import("../pages/customer/CustomerPayment
 const CustomerProfilePage = lazy(() => import("../pages/customer/CustomerProfilePage"));
 const CustomerFeedbackPage = lazy(() => import("../pages/customer/CustomerFeedbackPage"));
 const CustomerReservationPage = lazy(() => import("../pages/customer/CustomerReservationPage"));
+const MenuBrowsePage = lazy(() => import("../pages/customer/MenuBrowsePage"));
 
 // Route configuration following a senior-level pattern
 export const routeConfig: RouteObject[] = [
@@ -138,6 +143,16 @@ export const routeConfig: RouteObject[] = [
         ),
     },
     {
+        path: "/admin/dashboard",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin"]}>
+                    <AdminDashboardPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
         path: "/admin/menu",
         element: (
             <AppLayout>
@@ -229,13 +244,51 @@ export const routeConfig: RouteObject[] = [
             </AppLayout>
         ),
     },
+    {
+        path: "/staff/orders",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <StaffOrderManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/staff/menu",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <StaffMenuViewPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/staff/tables",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                    <StaffTableManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
 
     // Customer routes
+    {
+        path: "/menu",
+        element: (
+            <AppLayout>
+                <MenuBrowsePage />
+            </AppLayout>
+        ),
+    },
     {
         path: "/customer/orders",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <CustomerOrderPage />
                 </AuthGuard>
             </AppLayout>

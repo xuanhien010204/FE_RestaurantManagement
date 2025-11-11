@@ -16,7 +16,7 @@ export interface User {
     address?: string;
     role: UserRole;
     status: UserStatus;
-    createdAt: string;   // DateTime => string ISO
+    createdAt: string;   // DateTime => string ISO  
     updatedAt?: string;
     isDeleted: boolean;
     staffProfile?: StaffProfile;

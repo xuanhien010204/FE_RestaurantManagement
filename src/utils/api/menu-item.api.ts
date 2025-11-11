@@ -16,12 +16,20 @@ export type MenuItemImageUploadResponse = {
 // Get all menu items (public access)
 export const getAllMenuItems = () => axios.get("/menu-item");
 
+// Get paginated menu items (public access)
+export const getPaginatedMenuItems = (page: number = 1, pageSize: number = 10) =>
+    axios.get(`/menu-item/paginated?page=${page}&pageSize=${pageSize}`);
+
 // Get menu item by ID (public access)
 export const getMenuItemById = (id: number) => axios.get(`/menu-item/${id}`);
 
 // Search menu items (staff/admin)
 export const searchMenuItems = (keyword?: string) =>
     axios.get(`/menu-item/search?keyword=${encodeURIComponent(keyword || "")}`);
+
+// Search menu items with pagination (staff/admin)
+export const searchPaginatedMenuItems = (keyword: string, page: number = 1, pageSize: number = 10) =>
+    axios.get(`/menu-item/search/paginated?keyword=${encodeURIComponent(keyword)}&page=${page}&pageSize=${pageSize}`);
 
 // Add menu item (staff/admin)
 export const createMenuItem = (payload: MenuItemCreateDto) =>

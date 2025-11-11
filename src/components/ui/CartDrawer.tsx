@@ -2,6 +2,7 @@ import React from "react";
 import { Drawer, Button, List, InputNumber, Typography, Divider, Input, message } from "antd";
 import { useCart } from "../../context/CartContext";
 import { CloseOutlined, DeleteOutlined, GiftOutlined } from "@ant-design/icons";
+import { createOrder } from "../../services/order.service";
 
 const { Text } = Typography;
 
@@ -32,8 +33,9 @@ const CartDrawer: React.FC = () => {
             await applyPromotion(promoCode);
             message.success("Áp dụng mã giảm giá thành công!");
             setPromoCode("");
-        } catch (err: any) {
-            message.error(err.message || "Không thể áp dụng mã giảm giá");
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Không thể áp dụng mã giảm giá";
+            message.error(errorMessage);
         } finally {
             setLoadingPromo(false);
         }
@@ -145,6 +147,10 @@ const CartDrawer: React.FC = () => {
                 size="large"
                 className="mt-6 bg-orange-500"
                 disabled={items.length === 0}
+                onClick={() => createOrder({
+                    tableId: 0, // Default table ID, can be updated later
+                    items: items.map(i => ({ menuItemId: i.id, quantity: i.quantity }))
+                })}
             >
                 Đặt hàng
             </Button>

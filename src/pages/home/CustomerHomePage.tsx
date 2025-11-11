@@ -113,12 +113,13 @@ const CustomerHomePage: React.FC = () => {
     const [page, setPage] = useState(1);
     const itemsPerPage = 8;
 
-    // ✅ Gọi API duy nhất 1 lần
+    // ✅ Gọi API duy nhất 1 lần - Backend đã trả về images
     useEffect(() => {
         const fetchItems = async () => {
             setLoading(true);
             try {
                 const items = await menuItemService.getAllMenuItems();
+                // Backend đã trả về images trong MenuItem response
                 const available = items.filter((i) => i.status === "Available");
 
                 const uniqueCats = Array.from(
@@ -127,9 +128,7 @@ const CustomerHomePage: React.FC = () => {
 
                 setCategories(uniqueCats);
                 setAllItems(available);
-
-                const firstBatch = available.slice(0, itemsPerPage);
-                await loadImagesFor(firstBatch, true);
+                setMenuItems(available.slice(0, itemsPerPage));
             } catch (err) {
                 console.error(err);
                 message.error("Không thể tải thực đơn");
@@ -154,31 +153,11 @@ const CustomerHomePage: React.FC = () => {
         });
 
         setPage(1);
-        loadImagesFor(filtered.slice(0, itemsPerPage), true);
+        setMenuItems(filtered.slice(0, itemsPerPage));
     }, [selectedCategory, searchKeyword, allItems]);
 
-    // ✅ Lazy load ảnh
-    const loadImagesFor = async (items: MenuItem[], reset: boolean = false) => {
-        setLoading(true);
-        try {
-            const withImages = await Promise.all(
-                items.map(async (item) => {
-                    try {
-                        const images = await menuItemService.getMenuItemImageByMenuItemId(item.id);
-                        return { ...item, images };
-                    } catch {
-                        return { ...item, images: [] };
-                    }
-                })
-            );
-            setMenuItems((prev) => (reset ? withImages : [...prev, ...withImages]));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // ✅ Khi nhấn “Xem thêm”
-    const handleLoadMore = async () => {
+    // ✅ Khi nhấn "Xem thêm"
+    const handleLoadMore = () => {
         const filtered = allItems.filter((item) => {
             const matchCategory = selectedCategory ? item.category === selectedCategory : true;
             const matchKeyword = searchKeyword
@@ -189,9 +168,8 @@ const CustomerHomePage: React.FC = () => {
         });
 
         const nextPage = page + 1;
-        const nextItems = filtered.slice(page * itemsPerPage, nextPage * itemsPerPage);
-        await loadImagesFor(nextItems);
         setPage(nextPage);
+        setMenuItems(filtered.slice(0, nextPage * itemsPerPage));
     };
 
     const handleAddToCart = useCallback(

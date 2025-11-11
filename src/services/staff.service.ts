@@ -21,6 +21,17 @@ export const getAllStaff = async (): Promise<StaffProfile[]> => {
     return response.data.map(mapBackendStaffToFrontend);
 };
 
+export const getPaginatedStaff = async (page: number = 1, pageSize: number = 10) => {
+    const response = await staffApi.getPaginatedStaff(page, pageSize);
+    return {
+        items: response.data.items?.map(mapBackendStaffToFrontend) ?? [],
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
+};
+
 export const getStaffById = async (id: number): Promise<StaffProfile> => {
     const response = await staffApi.getStaffById(id);
     return mapBackendStaffToFrontend(response.data);
@@ -39,6 +50,17 @@ export const deleteStaff = async (id: number) => {
 export const searchStaff = async (keyword: string): Promise<StaffProfile[]> => {
     const response = await staffApi.searchStaff(keyword);
     return response.data.map(mapBackendStaffToFrontend);
+};
+
+export const searchPaginatedStaff = async (keyword: string, page: number = 1, pageSize: number = 10) => {
+    const response = await staffApi.searchPaginatedStaff(keyword, page, pageSize);
+    return {
+        items: response.data.items?.map(mapBackendStaffToFrontend) ?? [],
+        totalItems: response.data.totalItems ?? 0,
+        totalPages: response.data.totalPages ?? 0,
+        currentPage: response.data.currentPage ?? page,
+        pageSize: response.data.pageSize ?? pageSize,
+    };
 };
 
 // Map backend staff DTO to frontend StaffProfile type
