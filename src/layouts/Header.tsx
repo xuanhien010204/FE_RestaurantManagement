@@ -73,7 +73,7 @@ const Header: React.FC = () => {
                         <Link to="/">HOME</Link>
                         <Link to="/about">ABOUT</Link>
                         <Link to="/contact">CONTACT</Link>
-                        <Link to="/booking">Booking TABLE</Link>
+                        <Link to="/booking">BOOKING TABLE</Link>
                     </nav>
 
                     {/* Bên phải */}
