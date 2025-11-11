@@ -70,6 +70,7 @@ const AdminHomePage: React.FC = () => {
             </div>
 
             <Row gutter={[16, 16]}>
+                {/* Menu */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý thực đơn"
@@ -80,6 +81,7 @@ const AdminHomePage: React.FC = () => {
                     />
                 </Col>
 
+                {/* Orders */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý đơn hàng"
@@ -90,6 +92,7 @@ const AdminHomePage: React.FC = () => {
                     />
                 </Col>
 
+                {/* Staff */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý nhân viên"
@@ -100,6 +103,7 @@ const AdminHomePage: React.FC = () => {
                     />
                 </Col>
 
+                {/* Tables */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý bàn ăn"
@@ -110,6 +114,7 @@ const AdminHomePage: React.FC = () => {
                     />
                 </Col>
 
+                {/* Payments */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý thanh toán"
@@ -120,6 +125,7 @@ const AdminHomePage: React.FC = () => {
                     />
                 </Col>
 
+                {/* Feedback */}
                 <Col xs={24} sm={12} lg={8}>
                     <QuickActionCard
                         title="Quản lý đánh giá"
@@ -127,6 +133,17 @@ const AdminHomePage: React.FC = () => {
                         icon={<MessageOutlined />}
                         iconColor="text-red-600"
                         onClick={() => navigate('/admin/feedback')}
+                    />
+                </Col>
+
+                {/* Promotions */}
+                <Col xs={24} sm={12} lg={8}>
+                    <QuickActionCard
+                        title="Quản lý mã giảm giá"
+                        description="Tạo, chỉnh sửa và quản lý mã giảm giá"
+                        icon={<DollarOutlined />}
+                        iconColor="text-yellow-600"
+                        onClick={() => navigate('/admin/promotion')}
                     />
                 </Col>
             </Row>

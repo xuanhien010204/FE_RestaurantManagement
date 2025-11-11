@@ -43,7 +43,7 @@ const PromotionManagementPage: React.FC = () => {
   const loadAllPromotions = async () => {
     setLoading(true);
     try {
-      const items = await promotionService.getAllPromotions();
+      const items = await promotionService.searchPromotions("");
       setPromotions(items);
     } catch {
       message.error('Không thể tải danh sách mã giảm giá');
@@ -102,8 +102,8 @@ const PromotionManagementPage: React.FC = () => {
     try {
       const payload = {
         ...values,
-        startDate: values.startDate.format('YYYY-MM-DD'),
-        endDate: values.endDate.format('YYYY-MM-DD'),
+        startDate: values.startDate.toDate().toISOString(),
+        endDate: values.endDate.toDate().toISOString(),
       };
 
       if (editingPromotion) {
@@ -295,7 +295,7 @@ const PromotionManagementPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item
-            name="discountPercentage"
+            name="discount"
             label="Giảm (%)"
             rules={[{ required: true, message: 'Vui lòng nhập mức giảm' }]}
           >
