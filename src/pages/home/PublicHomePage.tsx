@@ -1,5 +1,7 @@
 import React, { useEffect, useState, memo } from "react";
-import { Row, Col, Card, Button, Typography, Input, Select, message, Empty, Spin } from "antd";
+import {
+    Row, Col, Card, Button, Typography, Input, Select, message, Empty, Spin,
+} from "antd";
 import { SearchOutlined, PlusOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
 import { useCart } from "../../context/CartContext";
 import * as menuItemService from "../../services/menu-item.service";
@@ -67,7 +69,9 @@ const MenuItemCard = memo<MenuItemCardProps>(({ item, currentIndex, onPrev, onNe
                 <Paragraph className="text-sm mb-2 line-clamp-2">{item.description}</Paragraph>
             </div>
             <div className="flex justify-between items-center pt-3 border-t">
-                <Text strong className="text-lg text-orange-600">{item.price.toLocaleString('vi-VN')}đ</Text>
+                <Text strong className="text-lg text-orange-600">
+                    {item.price.toLocaleString("vi-VN")}đ
+                </Text>
                 <Button type="primary" size="small" icon={<PlusOutlined />} onClick={onAdd}>
                     Thêm
                 </Button>
@@ -79,94 +83,98 @@ const MenuItemCard = memo<MenuItemCardProps>(({ item, currentIndex, onPrev, onNe
 const PublicHomePage: React.FC = () => {
     const { addItem } = useCart();
 
+    const [allItems, setAllItems] = useState<MenuItem[]>([]);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
     const [loading, setLoading] = useState(false);
-    const [searchKeyword, setSearchKeyword] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [searchKeyword, setSearchKeyword] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState<string>("");
     const [categories, setCategories] = useState<string[]>([]);
     const [imageIndexes, setImageIndexes] = useState<Record<number, number>>({});
     const [page, setPage] = useState(1);
     const itemsPerPage = 8;
-    const [hasMore, setHasMore] = useState(true);
 
-    const loadMenuItems = async (pageNumber: number) => {
-        setLoading(true);
-        try {
-            // Lấy tất cả menu items (hoặc có thể filter search/category nếu backend hỗ trợ)
-            const items = await menuItemService.getAllMenuItems();
+    // 🔹 Chỉ gọi API 1 lần duy nhất khi mount
+    useEffect(() => {
+        const fetchItems = async () => {
+            setLoading(true);
+            try {
+                const items = await menuItemService.getAllMenuItems();
 
-            // Lazy load ảnh
-            const itemsWithImages = await Promise.all(
-                items.map(async item => {
-                    if (!item.images || item.images.length === 0) {
+                // Gọi ảnh song song
+                const itemsWithImages = await Promise.all(
+                    items.map(async (item) => {
                         try {
                             const images = await menuItemService.getMenuItemImageByMenuItemId(item.id);
                             return { ...item, images };
                         } catch {
                             return { ...item, images: [] };
                         }
-                    }
-                    return item;
-                })
-            );
-
-            // Update categories
-            const allCats = Array.from(new Set(itemsWithImages.map(i => i.category).filter(Boolean) as string[]));
-            setCategories(allCats);
-
-            // Filter + pagination
-            const filtered = itemsWithImages
-                .filter(i => i.status === 'Available')
-                .filter(i => selectedCategory ? i.category === selectedCategory : true)
-                .filter(i => searchKeyword
-                    ? i.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-                    i.description?.toLowerCase().includes(searchKeyword.toLowerCase())
-                    : true
+                    })
                 );
 
-            const paged = filtered.slice(0, pageNumber * itemsPerPage);
-            setMenuItems(paged);
+                const available = itemsWithImages.filter((i) => i.status === "Available");
+                const uniqueCats = Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]));
 
-            // Kiểm tra còn món tiếp theo
-            setHasMore(paged.length < filtered.length);
-        } catch (err) {
-            console.error(err);
-            message.error("Không thể tải thực đơn");
-        } finally {
-            setLoading(false);
-        }
-    };
+                setCategories(uniqueCats);
+                setAllItems(available);
+                setMenuItems(available.slice(0, itemsPerPage)); // render 8 đầu tiên
+            } catch (err) {
+                console.error(err);
+                message.error("Không thể tải thực đơn");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchItems();
+    }, []);
 
-    // Load lần đầu + page
+    // 🔹 Lọc theo search & category
     useEffect(() => {
-        loadMenuItems(page);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [page]);
+        const filtered = allItems.filter((item) => {
+            const matchCategory = selectedCategory ? item.category === selectedCategory : true;
+            const matchKeyword = searchKeyword
+                ? item.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                item.description?.toLowerCase().includes(searchKeyword.toLowerCase())
+                : true;
+            return matchCategory && matchKeyword;
+        });
 
-    // Khi search/category thay đổi → reset page
-    useEffect(() => {
         setPage(1);
-        loadMenuItems(1);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchKeyword, selectedCategory]);
+        setMenuItems(filtered.slice(0, itemsPerPage));
+    }, [selectedCategory, searchKeyword, allItems]);
 
     const handleAddToCart = (item: MenuItem) => {
         addItem(item, true);
         message.success(`${item.name} đã thêm vào giỏ hàng`);
     };
 
-    const handlePrevImage = (itemId: number, imagesLength: number) => {
-        setImageIndexes(prev => ({
+    const handlePrevImage = (itemId: number, total: number) => {
+        setImageIndexes((prev) => ({
             ...prev,
-            [itemId]: (prev[itemId] ?? 0) === 0 ? imagesLength - 1 : (prev[itemId] ?? 0) - 1
+            [itemId]: (prev[itemId] ?? 0) === 0 ? total - 1 : (prev[itemId] ?? 0) - 1,
         }));
     };
 
-    const handleNextImage = (itemId: number, imagesLength: number) => {
-        setImageIndexes(prev => ({
+    const handleNextImage = (itemId: number, total: number) => {
+        setImageIndexes((prev) => ({
             ...prev,
-            [itemId]: (prev[itemId] ?? 0) === imagesLength - 1 ? 0 : (prev[itemId] ?? 0) + 1
+            [itemId]: (prev[itemId] ?? 0) === total - 1 ? 0 : (prev[itemId] ?? 0) + 1,
         }));
+    };
+
+    const handleLoadMore = () => {
+        const filtered = allItems.filter((item) => {
+            const matchCategory = selectedCategory ? item.category === selectedCategory : true;
+            const matchKeyword = searchKeyword
+                ? item.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+                item.description?.toLowerCase().includes(searchKeyword.toLowerCase())
+                : true;
+            return matchCategory && matchKeyword;
+        });
+
+        const nextPage = page + 1;
+        setPage(nextPage);
+        setMenuItems(filtered.slice(0, nextPage * itemsPerPage));
     };
 
     return (
@@ -178,7 +186,7 @@ const PublicHomePage: React.FC = () => {
                             placeholder="Tìm kiếm món ăn..."
                             prefix={<SearchOutlined />}
                             value={searchKeyword}
-                            onChange={e => setSearchKeyword(e.target.value)}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
                             size="large"
                         />
                     </Col>
@@ -186,26 +194,32 @@ const PublicHomePage: React.FC = () => {
                         <Select
                             placeholder="Chọn danh mục"
                             value={selectedCategory || undefined}
-                            onChange={val => setSelectedCategory(val || '')}
+                            onChange={(val) => setSelectedCategory(val || "")}
                             allowClear
                             size="large"
                             className="w-full"
                         >
-                            {categories.map(cat => <Option key={cat} value={cat}>{cat}</Option>)}
+                            {categories.map((cat) => (
+                                <Option key={cat} value={cat}>
+                                    {cat}
+                                </Option>
+                            ))}
                         </Select>
                     </Col>
                 </Row>
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {loading && page === 1 ? (
-                    <div className="text-center py-12"><Spin tip="Đang tải thực đơn..." /></div>
+                {loading ? (
+                    <div className="text-center py-12">
+                        <Spin tip="Đang tải thực đơn..." />
+                    </div>
                 ) : menuItems.length === 0 ? (
                     <Empty description="Không có món nào phù hợp" />
                 ) : (
                     <>
                         <Row gutter={[16, 16]}>
-                            {menuItems.map(item => {
+                            {menuItems.map((item) => {
                                 const currentIndex = imageIndexes[item.id] ?? 0;
                                 return (
                                     <Col xs={24} sm={12} md={8} lg={6} key={item.id}>
@@ -220,9 +234,9 @@ const PublicHomePage: React.FC = () => {
                                 );
                             })}
                         </Row>
-                        {hasMore && (
+                        {menuItems.length < allItems.length && (
                             <div className="text-center mt-6">
-                                <Button onClick={() => setPage(prev => prev + 1)} loading={loading}>Xem thêm</Button>
+                                <Button onClick={handleLoadMore}>Xem thêm</Button>
                             </div>
                         )}
                     </>

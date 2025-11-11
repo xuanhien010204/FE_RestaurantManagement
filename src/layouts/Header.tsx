@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Badge, Avatar, Dropdown, Space, message } from "antd";
+import { Button, Badge, Avatar, Dropdown, Space } from "antd";
 import { useAppDispatch, useAppSelector } from "../redux/app/hook";
 import { logout } from "../redux/slices/authSlice";
 import { useCart } from "../context/CartContext";
@@ -73,6 +73,7 @@ const Header: React.FC = () => {
                         <Link to="/">HOME</Link>
                         <Link to="/about">ABOUT</Link>
                         <Link to="/contact">CONTACT</Link>
+                        <Link to="/booking">BOOKING TABLE</Link>
                     </nav>
 
                     {/* Bên phải */}
