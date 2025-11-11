@@ -23,7 +23,10 @@ export const getAllTables = async (): Promise<RestaurantTable[]> => {
     const response = await tableApi.getAllTables();
     return response.data.map(mapBackendTableToFrontend);
 };
-
+export const getAllTablesAvailable = async (): Promise<RestaurantTable[]> => {
+    const response = await tableApi.getAllTablesAvailable();
+    return response.data.map(mapBackendTableToFrontend);
+};
 export const searchTablesByNumber = async (tableNumber: number): Promise<RestaurantTable[]> => {
     const response = await tableApi.searchTablesByNumber(tableNumber);
     return response.data.map(mapBackendTableToFrontend);
