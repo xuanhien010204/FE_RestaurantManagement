@@ -19,6 +19,12 @@ export const createPromotion = async (payload: PromotionCreateRequest): Promise<
     return mapBackendPromotionToFrontend(response.data);
 };
 
+export const getAllPromotions = async (): Promise<Promotion[]> => {
+    console.log('[PromotionService] Loading all promotions...');
+    const response = await promotionApi.getAllPromotions();
+    return response.data.map(mapBackendPromotionToFrontend);
+};
+
 export const updatePromotion = async (id: number, payload: PromotionCreateRequest): Promise<Promotion> => {
     const response = await promotionApi.updatePromotion(id, payload);
     return mapBackendPromotionToFrontend(response.data);

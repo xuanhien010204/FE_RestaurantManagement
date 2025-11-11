@@ -20,6 +20,7 @@ const TableManagementPage = lazy(() => import("../pages/admin/TableManagementPag
 const FeedbackManagementPage = lazy(() => import("../pages/admin/FeedbackManagementPage"));
 const PaymentManagementPage = lazy(() => import("../pages/admin/PaymentManagementPage"));
 const PaymentCreatePage = lazy(() => import("../pages/admin/PaymentCreatePage"));
+const PromotionManagementPage = lazy(() => import("../pages/admin/PromotionManagementPage"));
 
 // Staff pages
 const StaffDashboardPage = lazy(() => import("../pages/staff/StaffDashboardPage"));
@@ -209,6 +210,16 @@ export const routeConfig: RouteObject[] = [
             </AppLayout>
         ),
     },
+    {
+        path: "/admin/promotions",
+        element: (
+            <AppLayout>
+                <AuthGuard allowedRoles={["Admin"]}>
+                    <PromotionManagementPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
 
     // Staff routes
     {
@@ -247,7 +258,7 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/profile",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Customer", "Admin"]}>
+                <AuthGuard allowedRoles={["Customer", "Admin", "Staff"]}>
                     <CustomerProfilePage />
                 </AuthGuard>
             </AppLayout>

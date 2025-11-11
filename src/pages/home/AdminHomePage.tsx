@@ -8,7 +8,8 @@ import {
     TeamOutlined,
     CalendarOutlined,
     MessageOutlined,
-    TableOutlined
+    TableOutlined,
+    GiftOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../redux/app/hook';
@@ -127,6 +128,16 @@ const AdminHomePage: React.FC = () => {
                         icon={<MessageOutlined />}
                         iconColor="text-red-600"
                         onClick={() => navigate('/admin/feedback')}
+                    />
+                </Col>
+
+                <Col xs={24} sm={12} lg={8}>
+                    <QuickActionCard
+                        title="Quản lý mã giảm giá"
+                        description="Tạo và quản lý mã khuyến mãi"
+                        icon={<GiftOutlined />}
+                        iconColor="text-pink-600"
+                        onClick={() => navigate('/admin/promotions')}
                     />
                 </Col>
             </Row>

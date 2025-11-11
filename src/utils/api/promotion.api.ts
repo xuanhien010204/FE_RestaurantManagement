@@ -9,6 +9,7 @@ export type PromotionCreateDto = {
 };
 
 export const createPromotion = (payload: PromotionCreateDto) => axios.post("/promotion", payload);
+export const getAllPromotions = () => axios.get("/promotion");
 export const updatePromotion = (id: number, payload: PromotionCreateDto) => axios.put(`/promotion/${id}`, payload);
 export const deletePromotion = (id: number) => axios.delete(`/promotion/${id}`);
 export const searchPromotions = (keyword: string) => axios.get(`/promotion/search?keyword=${encodeURIComponent(keyword)}`);

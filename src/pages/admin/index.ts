@@ -5,3 +5,4 @@ export { default as TableManagementPage } from './TableManagementPage';
 export { default as FeedbackManagementPage } from './FeedbackManagementPage';
 export { default as PaymentManagementPage } from './PaymentManagementPage';
 export { default as PaymentCreatePage } from './PaymentCreatePage';
+export { default as PromotionManagementPage } from './PromotionManagementPage';

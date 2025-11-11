@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../../public/images/logo.png"; // đường dẫn tới logo của bạn
+// import logo from "../../public/images/logo.png"; // đường dẫn tới logo của bạn
 
 const Footer: React.FC = () => {
     const year = new Date().getFullYear();
@@ -22,7 +22,7 @@ const Footer: React.FC = () => {
                     {/* Left: Info Card with Logo */}
                     <div className="w-full md:w-1/2 flex flex-col md:flex-row items-center md:items-start gap-4 bg-red-500 p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300">
                         <img
-                            src={logo}
+                            src="/images/logo.png"
                             alt="Logo"
                             className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover flex-shrink-0"
                         />

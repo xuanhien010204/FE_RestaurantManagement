@@ -10,8 +10,8 @@ import {
     FiPhone,
     FiClock,
 } from "react-icons/fi";
-import banner from "../../public/images/banner.png"
-import logo from "../../public/images/logo.png"
+// import banner from "../../public/images/banner.png"
+// import logo from "../../public/images/logo.png"
 const Header: React.FC = () => {
     const dispatch = useAppDispatch();
     const authState = useAppSelector((state) => state.auth);
@@ -59,7 +59,7 @@ const Header: React.FC = () => {
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-3">
                         <img
-                            src={logo}
+                            src="/images/logo.png"
                             alt="Logo"
                             className="w-24 h-24 rounded-full"
                         />
@@ -94,7 +94,98 @@ const Header: React.FC = () => {
                         {isAuthenticated ? (
                             <Dropdown
                                 menu={{
-                                    items: [
+                                    items: user?.role === 'Admin' ? [
+                                        {
+                                            key: "admin-dashboard",
+                                            label: "Bảng điều khiển",
+                                            onClick: () => navigate("/admin"),
+                                        },
+                                        {
+                                            key: "admin-menu",
+                                            label: "Quản lý thực đơn",
+                                            onClick: () => navigate("/admin/menu"),
+                                        },
+                                        {
+                                            key: "admin-staff",
+                                            label: "Quản lý nhân viên",
+                                            onClick: () => navigate("/admin/staff"),
+                                        },
+                                        {
+                                            key: "admin-orders",
+                                            label: "Quản lý đơn hàng",
+                                            onClick: () => navigate("/admin/orders"),
+                                        },
+                                        {
+                                            key: "admin-tables",
+                                            label: "Quản lý bàn ăn",
+                                            onClick: () => navigate("/admin/tables"),
+                                        },
+                                        {
+                                            key: "admin-payments",
+                                            label: "Quản lý thanh toán",
+                                            onClick: () => navigate("/admin/payments"),
+                                        },
+                                        {
+                                            key: "admin-promotions",
+                                            label: "Quản lý mã giảm giá",
+                                            onClick: () => navigate("/admin/promotions"),
+                                        },
+                                        {
+                                            key: "admin-feedback",
+                                            label: "Quản lý đánh giá",
+                                            onClick: () => navigate("/admin/feedback"),
+                                        },
+                                        { type: "divider" as const },
+                                        { key: "logout", label: "Đăng xuất", onClick: handleLogout },
+                                    ] : user?.role === 'Staff' ? [
+                                        {
+                                            key: "staff-dashboard",
+                                            label: "Bảng điều khiển",
+                                            onClick: () => navigate("/staff"),
+                                        },
+                                        {
+                                            key: "staff-menu",
+                                            label: "Quản lý thực đơn",
+                                            onClick: () => navigate("/admin/menu"),
+                                        },
+                                        {
+                                            key: "staff-orders",
+                                            label: "Quản lý đơn hàng",
+                                            onClick: () => navigate("/admin/orders"),
+                                        },
+                                        {
+                                            key: "staff-tables",
+                                            label: "Quản lý bàn ăn",
+                                            onClick: () => navigate("/admin/tables"),
+                                        },
+                                        {
+                                            key: "staff-payments",
+                                            label: "Thanh toán",
+                                            onClick: () => navigate("/admin/payments"),
+                                        },
+                                        { type: "divider" as const },
+                                        { key: "logout", label: "Đăng xuất", onClick: handleLogout },
+                                    ] : [
+                                        {
+                                            key: "customer-orders",
+                                            label: "Đơn hàng của tôi",
+                                            onClick: () => navigate("/customer/orders"),
+                                        },
+                                        {
+                                            key: "customer-payments",
+                                            label: "Lịch sử thanh toán",
+                                            onClick: () => navigate("/customer/payments"),
+                                        },
+                                        {
+                                            key: "customer-reservations",
+                                            label: "Đặt bàn",
+                                            onClick: () => navigate("/customer/reservations"),
+                                        },
+                                        {
+                                            key: "customer-feedback",
+                                            label: "Đánh giá",
+                                            onClick: () => navigate("/customer/feedback"),
+                                        },
                                         {
                                             key: "profile",
                                             label: "Thông tin cá nhân",
@@ -131,7 +222,7 @@ const Header: React.FC = () => {
             <div
                 className="relative h-64 bg-cover bg-center flex flex-col justify-center items-center text-white"
                 style={{
-                    backgroundImage: `url(${banner})`,
+                    backgroundImage: `url(/images/banner.png)`,
                 }}
             >
             </div>
