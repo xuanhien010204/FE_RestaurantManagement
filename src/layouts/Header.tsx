@@ -115,7 +115,7 @@ const Header: React.FC = () => {
                                             },
                                             {
                                                 key: "admin-staff",
-                                                label: "�‍💼 Nhân viên",
+                                                label: "👨‍💼 Nhân viên",
                                                 onClick: () => navigate("/admin/staff"),
                                             },
                                             {
