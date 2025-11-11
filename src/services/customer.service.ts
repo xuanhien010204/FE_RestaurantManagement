@@ -1,5 +1,6 @@
 import * as customerApi from "../utils/api/customer.api";
 import type { User } from "../types/User";
+import { extractData, extractArrayData, extractPaginatedData } from "../utils/response-mapper";
 
 export interface CustomerCreateRequest {
     fullName: string;
@@ -16,53 +17,51 @@ const UserStatusMap: Record<number, User["status"]> = {
 
 export const createCustomer = async (payload: CustomerCreateRequest) => {
     const response = await customerApi.createCustomer(payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const getAllCustomers = async (): Promise<User[]> => {
     const response = await customerApi.getAllCustomers();
-    return response.data.map(mapBackendCustomerToFrontend);
+    const customers = extractArrayData(response);
+    return customers.map(mapBackendCustomerToFrontend);
 };
 
 export const getPaginatedCustomers = async (page: number = 1, pageSize: number = 10) => {
     const response = await customerApi.getPaginatedCustomers(page, pageSize);
+    const paginatedData = extractPaginatedData(response, page, pageSize);
     return {
-        items: response.data.items?.map(mapBackendCustomerToFrontend) ?? [],
-        totalItems: response.data.totalItems ?? 0,
-        totalPages: response.data.totalPages ?? 0,
-        currentPage: response.data.currentPage ?? page,
-        pageSize: response.data.pageSize ?? pageSize,
+        ...paginatedData,
+        items: paginatedData.items.map(mapBackendCustomerToFrontend)
     };
 };
 
 export const getCustomerById = async (id: number): Promise<User> => {
     const response = await customerApi.getCustomerById(id);
-    return mapBackendCustomerToFrontend(response.data);
+    return mapBackendCustomerToFrontend(extractData(response));
 };
 
 export const updateCustomer = async (id: number, payload: CustomerCreateRequest) => {
     const response = await customerApi.updateCustomer(id, payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const deleteCustomer = async (id: number) => {
     const response = await customerApi.deleteCustomer(id);
-    return response.data;
+    return extractData(response);
 };
 
 export const searchCustomers = async (keyword: string): Promise<User[]> => {
     const response = await customerApi.searchCustomers(keyword);
-    return response.data.map(mapBackendCustomerToFrontend);
+    const customers = extractArrayData(response);
+    return customers.map(mapBackendCustomerToFrontend);
 };
 
 export const searchPaginatedCustomers = async (keyword: string, page: number = 1, pageSize: number = 10) => {
     const response = await customerApi.searchPaginatedCustomers(keyword, page, pageSize);
+    const paginatedData = extractPaginatedData(response, page, pageSize);
     return {
-        items: response.data.items?.map(mapBackendCustomerToFrontend) ?? [],
-        totalItems: response.data.totalItems ?? 0,
-        totalPages: response.data.totalPages ?? 0,
-        currentPage: response.data.currentPage ?? page,
-        pageSize: response.data.pageSize ?? pageSize,
+        ...paginatedData,
+        items: paginatedData.items.map(mapBackendCustomerToFrontend)
     };
 };
 

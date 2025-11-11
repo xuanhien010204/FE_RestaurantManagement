@@ -1,5 +1,6 @@
 import * as staffApi from "../utils/api/staff.api";
 import type { StaffProfile } from "../types/StaffProfile";
+import { extractData, extractArrayData, extractPaginatedData } from "../utils/response-mapper";
 
 export interface StaffCreateRequest {
     fullName: string;
@@ -13,53 +14,51 @@ export interface StaffCreateRequest {
 
 export const createStaff = async (payload: StaffCreateRequest) => {
     const response = await staffApi.createStaff(payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const getAllStaff = async (): Promise<StaffProfile[]> => {
     const response = await staffApi.getAllStaff();
-    return response.data.map(mapBackendStaffToFrontend);
+    const staff = extractArrayData(response);
+    return staff.map(mapBackendStaffToFrontend);
 };
 
 export const getPaginatedStaff = async (page: number = 1, pageSize: number = 10) => {
     const response = await staffApi.getPaginatedStaff(page, pageSize);
+    const paginatedData = extractPaginatedData(response, page, pageSize);
     return {
-        items: response.data.items?.map(mapBackendStaffToFrontend) ?? [],
-        totalItems: response.data.totalItems ?? 0,
-        totalPages: response.data.totalPages ?? 0,
-        currentPage: response.data.currentPage ?? page,
-        pageSize: response.data.pageSize ?? pageSize,
+        ...paginatedData,
+        items: paginatedData.items.map(mapBackendStaffToFrontend)
     };
 };
 
 export const getStaffById = async (id: number): Promise<StaffProfile> => {
     const response = await staffApi.getStaffById(id);
-    return mapBackendStaffToFrontend(response.data);
+    return mapBackendStaffToFrontend(extractData(response));
 };
 
 export const updateStaff = async (id: number, payload: StaffCreateRequest) => {
     const response = await staffApi.updateStaff(id, payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const deleteStaff = async (id: number) => {
     const response = await staffApi.deleteStaff(id);
-    return response.data;
+    return extractData(response);
 };
 
 export const searchStaff = async (keyword: string): Promise<StaffProfile[]> => {
     const response = await staffApi.searchStaff(keyword);
-    return response.data.map(mapBackendStaffToFrontend);
+    const staff = extractArrayData(response);
+    return staff.map(mapBackendStaffToFrontend);
 };
 
 export const searchPaginatedStaff = async (keyword: string, page: number = 1, pageSize: number = 10) => {
     const response = await staffApi.searchPaginatedStaff(keyword, page, pageSize);
+    const paginatedData = extractPaginatedData(response, page, pageSize);
     return {
-        items: response.data.items?.map(mapBackendStaffToFrontend) ?? [],
-        totalItems: response.data.totalItems ?? 0,
-        totalPages: response.data.totalPages ?? 0,
-        currentPage: response.data.currentPage ?? page,
-        pageSize: response.data.pageSize ?? pageSize,
+        ...paginatedData,
+        items: paginatedData.items.map(mapBackendStaffToFrontend)
     };
 };
 

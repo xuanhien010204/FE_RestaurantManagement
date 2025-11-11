@@ -97,48 +97,48 @@ export const routeConfig: RouteObject[] = [
         path: "/admin",
         element: (
             <AppLayout>
-
-                <div className="p-6">
-                    <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý thực đơn</h3>
-                            <p className="text-gray-600 mb-4">Quản lý các món ăn và thức uống</p>
-                            <a href="/admin/menu" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý nhân viên</h3>
-                            <p className="text-gray-600 mb-4">Quản lý thông tin nhân viên</p>
-                            <a href="/admin/staff" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý đơn hàng</h3>
-                            <p className="text-gray-600 mb-4">Theo dõi và xử lý đơn hàng</p>
-                            <a href="/admin/orders" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý bàn ăn</h3>
-                            <p className="text-gray-600 mb-4">Quản lý bàn và đặt chỗ</p>
-                            <a href="/admin/tables" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý đánh giá</h3>
-                            <p className="text-gray-600 mb-4">Xem và phản hồi đánh giá</p>
-                            <a href="/admin/feedback" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý thanh toán</h3>
-                            <p className="text-gray-600 mb-4">Theo dõi giao dịch và doanh thu</p>
-                            <a href="/admin/payments" className="text-blue-600 hover:underline">Xem chi tiết →</a>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold mb-2">Quản lý mã giảm giá</h3>
-                            <p className="text-gray-600 mb-4">Quản lý thông tin mã giảm giá</p>
-                            <a href="/admin/promotion" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                <AuthGuard allowedRoles={["Admin"]}>
+                    <div className="p-6">
+                        <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý thực đơn</h3>
+                                <p className="text-gray-600 mb-4">Quản lý các món ăn và thức uống</p>
+                                <a href="/admin/menu" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý nhân viên</h3>
+                                <p className="text-gray-600 mb-4">Quản lý thông tin nhân viên</p>
+                                <a href="/admin/staff" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý đơn hàng</h3>
+                                <p className="text-gray-600 mb-4">Theo dõi và xử lý đơn hàng</p>
+                                <a href="/admin/orders" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý bàn ăn</h3>
+                                <p className="text-gray-600 mb-4">Quản lý bàn và đặt chỗ</p>
+                                <a href="/admin/tables" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý đánh giá</h3>
+                                <p className="text-gray-600 mb-4">Xem và phản hồi đánh giá</p>
+                                <a href="/admin/feedback" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý thanh toán</h3>
+                                <p className="text-gray-600 mb-4">Theo dõi giao dịch và doanh thu</p>
+                                <a href="/admin/payments" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
+                            <div className="bg-white p-4 rounded-lg shadow">
+                                <h3 className="text-lg font-semibold mb-2">Quản lý mã giảm giá</h3>
+                                <p className="text-gray-600 mb-4">Quản lý thông tin mã giảm giá</p>
+                                <a href="/admin/promotion" className="text-blue-600 hover:underline">Xem chi tiết →</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                </AuthGuard>
             </AppLayout>
         ),
     },
@@ -238,7 +238,7 @@ export const routeConfig: RouteObject[] = [
         path: "/staff",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                <AuthGuard allowedRoles={["Staff"]}>
                     <StaffDashboardPage />
                 </AuthGuard>
             </AppLayout>
@@ -248,7 +248,7 @@ export const routeConfig: RouteObject[] = [
         path: "/staff/orders",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                <AuthGuard allowedRoles={["Staff"]}>
                     <StaffOrderManagementPage />
                 </AuthGuard>
             </AppLayout>
@@ -258,7 +258,7 @@ export const routeConfig: RouteObject[] = [
         path: "/staff/menu",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                <AuthGuard allowedRoles={["Staff"]}>
                     <StaffMenuViewPage />
                 </AuthGuard>
             </AppLayout>
@@ -268,7 +268,7 @@ export const routeConfig: RouteObject[] = [
         path: "/staff/tables",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Admin", "Staff"]}>
+                <AuthGuard allowedRoles={["Staff"]}>
                     <StaffTableManagementPage />
                 </AuthGuard>
             </AppLayout>
@@ -298,7 +298,7 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/payments",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <CustomerPaymentPage />
                 </AuthGuard>
             </AppLayout>
@@ -308,7 +308,7 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/profile",
         element: (
             <AppLayout>
-                <AuthGuard allowedRoles={["Customer", "Admin"]}>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <CustomerProfilePage />
                 </AuthGuard>
             </AppLayout>
@@ -319,7 +319,7 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/feedback",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <CustomerFeedbackPage />
                 </AuthGuard>
             </AppLayout>
@@ -329,19 +329,19 @@ export const routeConfig: RouteObject[] = [
         path: "/customer/reservations",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <CustomerReservationPage />
                 </AuthGuard>
             </AppLayout>
         ),
     },
 
-    // Protected user routes
+    // Protected user routes (deprecated - kept for compatibility)
     {
         path: "/reservations",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Quản lý đặt bàn</h1>
                         <p className="text-gray-600">Reservation functionality coming soon...</p>
@@ -354,7 +354,7 @@ export const routeConfig: RouteObject[] = [
         path: "/orders",
         element: (
             <AppLayout>
-                <AuthGuard>
+                <AuthGuard allowedRoles={["Customer"]}>
                     <div className="p-6">
                         <h1 className="text-2xl font-bold mb-4">Quản lý đơn hàng</h1>
                         <p className="text-gray-600">Order functionality coming soon...</p>

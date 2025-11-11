@@ -23,7 +23,8 @@ export interface LoginResponse {
 export const login = async (email: string, password: string): Promise<LoginResponse> => {
     try {
         const response = await authApi.login({ email, password });
-        const { token, user: rawUser } = response.data;
+        // Backend wraps response in { data: { token, user } }
+        const { token, user: rawUser } = response.data.data;
 
         // Set access token in memory
         setAccessToken(token);
@@ -41,7 +42,8 @@ export const login = async (email: string, password: string): Promise<LoginRespo
 export const loginWithGoogle = async (idToken: string): Promise<LoginResponse> => {
     try {
         const response = await authApi.loginWithGoogle({ idToken });
-        const { token, user: rawUser } = response.data;
+        // Backend wraps response in { data: { token, user } }
+        const { token, user: rawUser } = response.data.data;
 
         setAccessToken(token);
 

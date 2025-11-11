@@ -1,5 +1,6 @@
 import * as orderApi from "../utils/api/order.api";
 import type { Order } from "../types/Order";
+import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface OrderCreateRequest {
     tableId: number | 0;
@@ -25,38 +26,41 @@ const OrderStatusMap: Record<number, Order["status"]> = {
 
 export const createOrder = async (payload: OrderCreateRequest) => {
     const response = await orderApi.createOrder(payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const getAllOrders = async (): Promise<Order[]> => {
     const response = await orderApi.getAllOrders();
-    return response.data.map(mapBackendOrderToFrontend);
+    const orders = extractArrayData(response);
+    return orders.map(mapBackendOrderToFrontend);
 };
 
 export const getOrderById = async (id: number): Promise<Order> => {
     const response = await orderApi.getOrderById(id);
-    return mapBackendOrderToFrontend(response.data);
+    return mapBackendOrderToFrontend(extractData(response));
 };
 
 export const searchOrders = async (keyword: string): Promise<Order[]> => {
     const response = await orderApi.searchOrders(keyword);
-    return response.data.map(mapBackendOrderToFrontend);
+    const orders = extractArrayData(response);
+    return orders.map(mapBackendOrderToFrontend);
 };
 
 export const updateOrder = async (id: number, payload: OrderUpdateRequest) => {
     const response = await orderApi.updateOrder(id, payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const cancelOrder = async (id: number) => {
     const response = await orderApi.cancelOrder(id);
-    return response.data;
+    return extractData(response);
 };
 
 export const getOrderStatus = async (id: number): Promise<{ status: Order["status"] }> => {
     const response = await orderApi.getOrderStatus(id);
+    const data = extractData(response) as { status: number };
     return {
-        status: OrderStatusMap[Number(response.data.status ?? 0)] ?? "Pending"
+        status: OrderStatusMap[Number(data.status ?? 0)] ?? "Pending"
     };
 };
 

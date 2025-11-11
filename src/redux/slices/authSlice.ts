@@ -11,7 +11,15 @@ interface AuthState {
 
 const initialState: AuthState = {
     token: localStorage.getItem('fe_restaurant_access_token'),
-    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
+    user: (() => {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) return null;
+        try {
+            return JSON.parse(userStr);
+        } catch {
+            return null;
+        }
+    })(),
     loading: false,
     error: null,
 };

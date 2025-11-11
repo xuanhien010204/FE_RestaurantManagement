@@ -1,5 +1,6 @@
 import * as tableApi from "../utils/api/restaurant-table.api";
 import type { RestaurantTable } from "../types/RestaurantTable";
+import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface RestaurantTableCreateRequest {
     tableNumber: number;
@@ -16,25 +17,30 @@ const TableStatusMap: Record<number, RestaurantTable["status"]> = {
 
 export const getTableById = async (id: number): Promise<RestaurantTable> => {
     const response = await tableApi.getTableById(id);
-    return mapBackendTableToFrontend(response.data);
+    return mapBackendTableToFrontend(extractData(response));
 };
 
 export const getAllTables = async (): Promise<RestaurantTable[]> => {
     const response = await tableApi.getAllTables();
-    return response.data.map(mapBackendTableToFrontend);
+    const tables = extractArrayData(response);
+    return tables.map(mapBackendTableToFrontend);
 };
+
 export const getAllTablesAvailable = async (): Promise<RestaurantTable[]> => {
     const response = await tableApi.getAllTablesAvailable();
-    return response.data.map(mapBackendTableToFrontend);
+    const tables = extractArrayData(response);
+    return tables.map(mapBackendTableToFrontend);
 };
+
 export const searchTablesByNumber = async (tableNumber: number): Promise<RestaurantTable[]> => {
     const response = await tableApi.searchTablesByNumber(tableNumber);
-    return response.data.map(mapBackendTableToFrontend);
+    const tables = extractArrayData(response);
+    return tables.map(mapBackendTableToFrontend);
 };
 
 export const createTable = async (payload: RestaurantTableCreateRequest): Promise<RestaurantTable> => {
     const response = await tableApi.createTable(payload);
-    return mapBackendTableToFrontend(response.data);
+    return mapBackendTableToFrontend(extractData(response));
 };
 
 export const updateTable = async (id: number, payload: RestaurantTableCreateRequest): Promise<void> => {

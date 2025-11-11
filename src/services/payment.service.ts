@@ -1,5 +1,6 @@
 import * as paymentApi from "../utils/api/payment.api";
 import type { Payment, PaymentStatistics, PaymentMethod, PaymentStatus } from "../types/Payment";
+import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface PaymentDetailCreateRequest {
     method: number; // 0=Cash, 1=CreditCard, 2=BankTransfer, 3=EWallet, 4=Voucher
@@ -31,57 +32,63 @@ const PaymentStatusMap: Record<number, PaymentStatus> = {
 
 export const createPayment = async (payload: PaymentCreateRequest) => {
     const response = await paymentApi.createPayment(payload);
-    return response.data;
+    return extractData(response);
 };
 
 export const getAllPayments = async (): Promise<Payment[]> => {
     const response = await paymentApi.getAllPayments();
-    return response.data.map(mapBackendPaymentToFrontend);
+    const payments = extractArrayData(response);
+    return payments.map(mapBackendPaymentToFrontend);
 };
 
 export const getPaymentById = async (id: number): Promise<Payment> => {
     const response = await paymentApi.getPaymentById(id);
-    return mapBackendPaymentToFrontend(response.data);
+    return mapBackendPaymentToFrontend(extractData(response));
 };
 
 export const getPaymentsByOrderId = async (orderId: number): Promise<Payment[]> => {
     const response = await paymentApi.getPaymentsByOrderId(orderId);
-    return response.data.map(mapBackendPaymentToFrontend);
+    const payments = extractArrayData(response);
+    return payments.map(mapBackendPaymentToFrontend);
 };
 
 export const getPaymentsByStatus = async (status: number): Promise<Payment[]> => {
     const response = await paymentApi.getPaymentsByStatus(status);
-    return response.data.map(mapBackendPaymentToFrontend);
+    const payments = extractArrayData(response);
+    return payments.map(mapBackendPaymentToFrontend);
 };
 
 export const updatePaymentStatus = async (id: number, status: number) => {
     const response = await paymentApi.updatePaymentStatus(id, { paymentId: id, status });
-    return response.data;
+    return extractData(response);
 };
 
 export const deletePayment = async (id: number) => {
     const response = await paymentApi.deletePayment(id);
-    return response.data;
+    return extractData(response);
 };
 
 export const searchPaymentsByTransactionCode = async (transactionCode: string): Promise<Payment[]> => {
     const response = await paymentApi.searchPaymentsByTransactionCode(transactionCode);
-    return response.data.map(mapBackendPaymentToFrontend);
+    const payments = extractArrayData(response);
+    return payments.map(mapBackendPaymentToFrontend);
 };
 
 export const getPaymentsByDateRange = async (startDate: string, endDate: string): Promise<Payment[]> => {
     const response = await paymentApi.getPaymentsByDateRange(startDate, endDate);
-    return response.data.map(mapBackendPaymentToFrontend);
+    const payments = extractArrayData(response);
+    return payments.map(mapBackendPaymentToFrontend);
 };
 
 export const getTotalRevenue = async (): Promise<number> => {
     const response = await paymentApi.getTotalRevenue();
-    return response.data.totalRevenue;
+    const data = extractData(response) as { totalRevenue: number };
+    return data.totalRevenue;
 };
 
 export const getPaymentStatistics = async (): Promise<PaymentStatistics> => {
     const response = await paymentApi.getPaymentStatistics();
-    return response.data;
+    return extractData(response);
 };
 
 export const verifyPayment = async (id: number, transactionCode: string) => {

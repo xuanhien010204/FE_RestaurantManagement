@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useCallback } from "react";
 import * as authService from "../services/auth.service";
 import { AuthContext } from "./AuthContextBase";
-import type { User } from "../types/User";
+import { useAppDispatch, useAppSelector } from "../redux/app/hook";
+import { setUser } from "../redux/slices/authSlice";
 
 interface AuthProviderProps {
     children: React.ReactNode;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const dispatch = useAppDispatch();
+    const reduxUser = useAppSelector(state => state.auth.user);
     const [loading, setLoading] = useState(true);
 
     // Initialize auth state on app start
     useEffect(() => {
-        // Do not clear persisted token on startup - allow token from localStorage to be used
-        setUser(null);
         setLoading(false);
     }, []);
 
@@ -22,39 +22,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setLoading(true);
         try {
             const loginResponse = await authService.login(email, password);
-            setUser(loginResponse.user);
-        } catch (error) {
-            setUser(null);
-            throw error; // Re-throw so LoginPage can handle the error
+            dispatch(setUser({ user: loginResponse.user, token: loginResponse.token }));
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [dispatch]);
 
     const loginWithGoogle = useCallback(async (idToken: string): Promise<void> => {
         setLoading(true);
         try {
             const res = await authService.loginWithGoogle(idToken);
-            setUser(res.user);
-        } catch (error) {
-            setUser(null);
-            throw error;
+            dispatch(setUser({ user: res.user, token: res.token }));
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [dispatch]);
 
     const logout = useCallback(async (): Promise<void> => {
         try {
             await authService.logout();
         } finally {
-            setUser(null);
+            // logout action already handled in Redux
         }
     }, []);
 
     const contextValue = {
-        user,
-        isAuthenticated: !!user,
+        user: reduxUser,
+        isAuthenticated: !!reduxUser,
         login,
         loginWithGoogle,
         logout,

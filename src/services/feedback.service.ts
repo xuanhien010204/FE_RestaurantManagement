@@ -1,5 +1,6 @@
 import * as feedbackApi from "../utils/api/feedback.api";
 import type { Feedback } from "../types/Feedback";
+import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface CreateFeedbackRequest {
     userId: number;
@@ -21,32 +22,33 @@ export interface FeedbackUpdateRequest {
 
 export const getAllFeedbacks = async (): Promise<Feedback[]> => {
     const response = await feedbackApi.getAllFeedbacks();
-    return response.data.map(mapBackendFeedbackToFrontend);
+    const feedbacks = extractArrayData(response);
+    return feedbacks.map(mapBackendFeedbackToFrontend);
 };
 
 export const getFeedbackById = async (id: number): Promise<Feedback> => {
     const response = await feedbackApi.getFeedbackById(id);
-    return mapBackendFeedbackToFrontend(response.data);
+    return mapBackendFeedbackToFrontend(extractData(response));
 };
 
 export const createFeedback = async (payload: CreateFeedbackRequest): Promise<Feedback> => {
     const response = await feedbackApi.createFeedback(payload);
-    return mapBackendFeedbackToFrontend(response.data);
+    return mapBackendFeedbackToFrontend(extractData(response));
 };
 
 export const updateFeedback = async (id: number, payload: FeedbackUpdateRequest): Promise<Feedback> => {
     const response = await feedbackApi.updateFeedback(id, payload);
-    return mapBackendFeedbackToFrontend(response.data);
+    return mapBackendFeedbackToFrontend(extractData(response));
 };
 
 export const updateOwnFeedback = async (payload: FeedbackUpdateRequest): Promise<Feedback> => {
     const response = await feedbackApi.updateOwnFeedback(payload);
-    return mapBackendFeedbackToFrontend(response.data);
+    return mapBackendFeedbackToFrontend(extractData(response));
 };
 
 export const deleteFeedback = async (id: number) => {
     const response = await feedbackApi.deleteFeedback(id);
-    return response.data;
+    return extractData(response);
 };
 
 // Map backend feedback DTO to frontend Feedback type

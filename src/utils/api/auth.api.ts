@@ -5,8 +5,12 @@ export type LoginRequest = { email: string; password: string };
 export type LoginResponse = {
     success: boolean;
     message: string;
-    token: string;
-    user: User;
+    data: {
+        success: boolean;
+        message: string;
+        token: string;
+        user: User;
+    };
 };
 export type RegisterRequest = {
     email: string;
@@ -19,8 +23,12 @@ export type RegisterRequest = {
 export type RegisterResponse = {
     success: boolean;
     message: string;
-    token: string;
-    user: User;
+    data: {
+        success: boolean;
+        message: string;
+        token: string;
+        user: User;
+    };
 };
 export type UpdateProfileRequest = { fullName: string; phone: string; address: string };
 export type ChangePasswordRequest = { currentPassword: string; newPassword: string; confirmNewPassword: string };

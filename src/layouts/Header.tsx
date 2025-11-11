@@ -67,28 +67,22 @@ const Header: React.FC = () => {
                     </Link>
 
                     {/* Menu giữa */}
-                    <nav className="hidden md:flex gap-8 font-semibold text-slate-700">
+                    <nav className="hidden md:flex gap-6 font-semibold text-slate-700 text-sm">
                         <Link to="/">HOME</Link>
-                        <Link to="/about">ABOUT</Link>
-                        <Link to="/contact">CONTACT</Link>
-                        <Link to="/booking">BOOKING TABLE</Link>
 
-                        {/* Admin Menu */}
-                        {user?.role === "Admin" && (
+                        {/* Customer always sees these */}
+                        {user?.role === "Customer" && (
                             <>
-                                <Link to="/admin/dashboard">DASHBOARD</Link>
-                                <Link to="/admin/menu-items">MENU ITEMS</Link>
-                                <Link to="/admin/promotions">PROMOTIONS</Link>
-                                <Link to="/admin/tables">TABLES</Link>
+                                <Link to="/about">ABOUT</Link>
+                                <Link to="/contact">CONTACT</Link>
+                                <Link to="/booking">BOOKING TABLE</Link>
                             </>
                         )}
 
-                        {/* Staff Menu */}
-                        {(user?.role === "Admin" || user?.role === "Staff") && (
+                        {/* Admin Menu - Admin Only */}
+                        {user?.role === "Admin" && (
                             <>
-                                <Link to="/staff/orders">ORDERS</Link>
-                                <Link to="/staff/menu">MENU</Link>
-                                <Link to="/staff/tables">TABLE STATUS</Link>
+                                <Link to="/admin/dashboard">DASHBOARD</Link>
                             </>
                         )}
                     </nav>
@@ -112,52 +106,94 @@ const Header: React.FC = () => {
                             <Dropdown
                                 menu={{
                                     items: [
-                                        // Admin menu items
+                                        // Admin menu items (Admin Only)
                                         ...(user?.role === "Admin" ? [
                                             {
                                                 key: "admin-dashboard",
-                                                label: "Admin Dashboard",
+                                                label: "📊 Dashboard",
                                                 onClick: () => navigate("/admin/dashboard"),
                                             },
+                                            {
+                                                key: "admin-staff",
+                                                label: "�‍💼 Nhân viên",
+                                                onClick: () => navigate("/admin/staff"),
+                                            },
+                                            {
+                                                key: "admin-menu",
+                                                label: "🍽️ Thực đơn",
+                                                onClick: () => navigate("/admin/menu"),
+                                            },
+                                            {
+                                                key: "admin-orders",
+                                                label: "📋 Đơn hàng",
+                                                onClick: () => navigate("/admin/orders"),
+                                            },
+                                            {
+                                                key: "admin-tables",
+                                                label: "🪑 Bàn ăn",
+                                                onClick: () => navigate("/admin/tables"),
+                                            },
+                                            {
+                                                key: "admin-promotions",
+                                                label: "🎟️ Khuyến mãi",
+                                                onClick: () => navigate("/admin/promotion"),
+                                            },
+                                            {
+                                                key: "admin-payments",
+                                                label: "💰 Thanh toán",
+                                                onClick: () => navigate("/admin/payments"),
+                                            },
+                                            {
+                                                key: "admin-feedbacks",
+                                                label: "💬 Phản hồi",
+                                                onClick: () => navigate("/admin/feedback"),
+                                            },
+                                            { type: "divider" as const },
                                         ] : []),
-                                        // Staff menu items
-                                        ...(user?.role === "Admin" || user?.role === "Staff" ? [
+                                        // Staff menu items (Staff Only - not shown for Admin)
+                                        ...(user?.role === "Staff" ? [
+                                            {
+                                                key: "staff-dashboard",
+                                                label: "📊 Staff Dashboard",
+                                                onClick: () => navigate("/staff"),
+                                            },
                                             {
                                                 key: "staff-orders",
-                                                label: "Quản lý đơn hàng",
+                                                label: "📋 Quản lý đơn hàng",
                                                 onClick: () => navigate("/staff/orders"),
                                             },
                                             {
                                                 key: "staff-menu",
-                                                label: "Xem thực đơn",
+                                                label: "📖 Xem thực đơn",
                                                 onClick: () => navigate("/staff/menu"),
                                             },
                                             {
                                                 key: "staff-tables",
-                                                label: "Quản lý bàn",
+                                                label: "🪑 Trạng thái bàn",
                                                 onClick: () => navigate("/staff/tables"),
                                             },
+                                            { type: "divider" as const },
                                         ] : []),
                                         // Customer menu items
                                         ...(user?.role === "Customer" ? [
                                             {
                                                 key: "profile",
-                                                label: "Thông tin cá nhân",
+                                                label: "👤 Thông tin cá nhân",
                                                 onClick: () => navigate("/customer/profile"),
                                             },
                                             {
                                                 key: "orders",
-                                                label: "Đơn hàng của tôi",
+                                                label: "📦 Đơn hàng của tôi",
                                                 onClick: () => navigate("/customer/orders"),
                                             },
                                             {
                                                 key: "reservations",
-                                                label: "Đặt bàn của tôi",
+                                                label: "📅 Đặt bàn của tôi",
                                                 onClick: () => navigate("/customer/reservations"),
                                             },
+                                            { type: "divider" as const },
                                         ] : []),
-                                        { type: "divider" as const },
-                                        { key: "logout", label: "Đăng xuất", onClick: handleLogout },
+                                        { key: "logout", label: "🚪 Đăng xuất", onClick: handleLogout },
                                     ],
                                 }}
                             >

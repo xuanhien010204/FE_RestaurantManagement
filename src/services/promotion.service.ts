@@ -1,5 +1,6 @@
 import * as promotionApi from "../utils/api/promotion.api";
 import type { Promotion } from "../types/Promotion";
+import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface PromotionCreateRequest {
     code: string;
@@ -16,32 +17,33 @@ const PromotionStatusMap: Record<number, Promotion["status"]> = {
 
 export const createPromotion = async (payload: PromotionCreateRequest): Promise<Promotion> => {
     const response = await promotionApi.createPromotion(payload);
-    return mapBackendPromotionToFrontend(response.data);
+    return mapBackendPromotionToFrontend(extractData(response));
 };
 
 export const updatePromotion = async (id: number, payload: PromotionCreateRequest): Promise<Promotion> => {
     const response = await promotionApi.updatePromotion(id, payload);
-    return mapBackendPromotionToFrontend(response.data);
+    return mapBackendPromotionToFrontend(extractData(response));
 };
 
 export const deletePromotion = async (id: number) => {
     const response = await promotionApi.deletePromotion(id);
-    return response.data;
+    return extractData(response);
 };
 
 export const searchPromotions = async (keyword: string): Promise<Promotion[]> => {
     const response = await promotionApi.searchPromotions(keyword);
-    return response.data.map(mapBackendPromotionToFrontend);
+    const promotions = extractArrayData(response);
+    return promotions.map(mapBackendPromotionToFrontend);
 };
 
 export const applyPromotionCode = async (code: string): Promise<Promotion> => {
     const response = await promotionApi.applyPromotionCode(code);
-    return mapBackendPromotionToFrontend(response.data);
+    return mapBackendPromotionToFrontend(extractData(response));
 };
 
 export const getPromotionById = async (id: number): Promise<Promotion> => {
     const response = await promotionApi.getPromotionById(id);
-    return mapBackendPromotionToFrontend(response.data);
+    return mapBackendPromotionToFrontend(extractData(response));
 };
 
 // Map backend promotion DTO to frontend Promotion type

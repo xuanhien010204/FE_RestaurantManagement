@@ -16,24 +16,27 @@ export const loginUser = createAsyncThunk(
             const response = await authApi.login(credentials);
             console.log('[LoginUser] API Response:', response.data);
 
-            if (response.data.success) {
+            // Backend wraps response in { data: { token, user, success, message } }
+            const loginData = response.data.data;
+
+            if (loginData.success) {
                 console.log('[LoginUser] Login successful, setting token');
                 // Set token for axios requests
-                setAccessToken(response.data.token);
+                setAccessToken(loginData.token);
 
                 dispatch(setUser({
-                    user: response.data.user,
-                    token: response.data.token
+                    user: loginData.user,
+                    token: loginData.token
                 }));
 
                 return {
-                    user: response.data.user,
-                    token: response.data.token
+                    user: loginData.user,
+                    token: loginData.token
                 };
             } else {
-                console.log('[LoginUser] API returned success=false:', response.data.message);
-                dispatch(setError(response.data.message || 'Login failed'));
-                return rejectWithValue(response.data.message || 'Login failed');
+                console.log('[LoginUser] API returned success=false:', loginData.message);
+                dispatch(setError(loginData.message || 'Login failed'));
+                return rejectWithValue(loginData.message || 'Login failed');
             }
         } catch (error: unknown) {
             console.error('[LoginUser] Error:', error);
@@ -63,24 +66,27 @@ export const loginWithGoogle = createAsyncThunk(
             const response = await authApi.loginWithGoogle({ idToken });
             console.log('[GoogleLogin] API Response:', response.data);
 
-            if (response.data.success) {
+            // Backend wraps response in { data: { token, user, success, message } }
+            const loginData = response.data.data;
+
+            if (loginData.success) {
                 console.log('[GoogleLogin] Google login successful, setting token');
                 // Set token for axios requests
-                setAccessToken(response.data.token);
+                setAccessToken(loginData.token);
 
                 dispatch(setUser({
-                    user: response.data.user,
-                    token: response.data.token
+                    user: loginData.user,
+                    token: loginData.token
                 }));
 
                 return {
-                    user: response.data.user,
-                    token: response.data.token
+                    user: loginData.user,
+                    token: loginData.token
                 };
             } else {
-                console.log('[GoogleLogin] API returned success=false:', response.data.message);
-                dispatch(setError(response.data.message || 'Google login failed'));
-                return rejectWithValue(response.data.message || 'Google login failed');
+                console.log('[GoogleLogin] API returned success=false:', loginData.message);
+                dispatch(setError(loginData.message || 'Google login failed'));
+                return rejectWithValue(loginData.message || 'Google login failed');
             }
         } catch (error: unknown) {
             console.error('[GoogleLogin] Error:', error);
@@ -106,18 +112,21 @@ export const registerUser = createAsyncThunk(
 
             const response = await authApi.register(userData);
 
-            if (response.data.success) {
+            // Backend wraps response in { data: { token, user, success, message } }
+            const registerData = response.data.data;
+
+            if (registerData.success) {
                 // Set token for axios requests
-                setAccessToken(response.data.token);
+                setAccessToken(registerData.token);
 
                 dispatch(setUser({
-                    user: response.data.user,
-                    token: response.data.token
+                    user: registerData.user,
+                    token: registerData.token
                 }));
-                return response.data;
+                return registerData;
             } else {
-                dispatch(setError(response.data.message || 'Registration failed'));
-                return rejectWithValue(response.data.message);
+                dispatch(setError(registerData.message || 'Registration failed'));
+                return rejectWithValue(registerData.message);
             }
         } catch (error: unknown) {
             const axiosError = error as { response?: { data?: { message?: string } } };
