@@ -100,16 +100,16 @@ const CustomerFeedbackPage: React.FC = () => {
     };
 
     //  Update Feedback (optional if allowed)
-    const handleUpdateFeedback = async (id: number, updatedData: Partial<Feedback>) => {
-        try {
-            await axios.put(`/api/feedbacks/${id}`, updatedData);
-            message.success('Feedback updated successfully');
-            fetchFeedbacks();
-        } catch (error) {
-            console.error(error);
-            message.error('Failed to update feedback');
-        }
-    };
+    // const handleUpdateFeedback = async (id: number, updatedData: Partial<Feedback>) => {
+    //     try {
+    //         await axios.put(`/api/feedbacks/${id}`, updatedData);
+    //         message.success('Feedback updated successfully');
+    //         fetchFeedbacks();
+    //     } catch (error) {
+    //         console.error(error);
+    //         message.error('Failed to update feedback');
+    //     }
+    // };
 
     const handleViewDetails = (feedback: Feedback) => {
         setSelectedFeedback(feedback);

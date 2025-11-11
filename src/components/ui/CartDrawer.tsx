@@ -44,7 +44,7 @@ const CartDrawer: React.FC = () => {
         }
 
         closeDrawer();
-        navigate("/customer/payments", { state: { fromCart: true } });
+        navigate("/customer/checkout", { state: { fromCart: true } });
     };
 
     const handleApplyPromo = async () => {

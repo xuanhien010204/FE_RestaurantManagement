@@ -27,6 +27,7 @@ const StaffDashboardPage = lazy(() => import("../pages/staff/StaffDashboardPage"
 // Customer pages
 const CustomerOrderPage = lazy(() => import("../pages/customer/CustomerOrderPage"));
 const CustomerPaymentPage = lazy(() => import("../pages/customer/CustomerPaymentPage"));
+const CustomerCheckoutPage = lazy(() => import("../pages/customer/CustomerCheckoutPage"));
 const CustomerProfilePage = lazy(() => import("../pages/customer/CustomerProfilePage"));
 const CustomerFeedbackPage = lazy(() => import("../pages/customer/CustomerFeedbackPage"));
 const CustomerReservationPage = lazy(() => import("../pages/customer/CustomerReservationPage"));
@@ -239,6 +240,16 @@ export const routeConfig: RouteObject[] = [
             <AppLayout>
                 <AuthGuard>
                     <CustomerPaymentPage />
+                </AuthGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/customer/checkout",
+        element: (
+            <AppLayout>
+                <AuthGuard>
+                    <CustomerCheckoutPage />
                 </AuthGuard>
             </AppLayout>
         ),

@@ -30,6 +30,7 @@ type CartContextType = {
     removePromotion: () => void;
     openDrawer: () => void;
     closeDrawer: () => void;
+    clearCart: () => void;
 };
 
 // Tạo Context với giá trị mặc định null
@@ -129,6 +130,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    const clearCart = () => {
+        setItems([]);
+    };
+
     return (
         <CartContext.Provider value={{
             items,
@@ -150,6 +155,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             removePromotion,
             openDrawer: () => setDrawerOpen(true),
             closeDrawer: () => setDrawerOpen(false),
+            clearCart,
             // grandTotal is intentionally not exported separately to avoid duplicate naming; callers can compute if needed
         }}>
             {children}
