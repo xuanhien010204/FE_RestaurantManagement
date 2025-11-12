@@ -99,14 +99,26 @@ const PublicHomePage: React.FC = () => {
             setLoading(true);
             try {
                 const items = await menuItemService.getAllMenuItems();
-
                 // Backend đã trả về images trong MenuItem response
                 const available = items.filter((i) => i.status === "Available");
-                const uniqueCats = Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]));
 
-                setCategories(uniqueCats);
-                setAllItems(available);
-                setMenuItems(available.slice(0, itemsPerPage)); // render 8 đầu tiên
+                setCategories(
+                    Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]))
+                );
+
+                // Gắn placeholder trước
+                const placeholderMenu = available.map(i => ({ ...i, images: [] }));
+                setAllItems(placeholderMenu);
+                setMenuItems(placeholderMenu.slice(0, itemsPerPage));
+
+                // Preload ảnh
+                available.forEach(async (item) => {
+                    try {
+                        const images = await menuItemService.getMenuItemImageByMenuItemId(item.id);
+                        setAllItems(prev => prev.map(i => i.id === item.id ? { ...i, images } : i));
+                        setMenuItems(prev => prev.map(i => i.id === item.id ? { ...i, images } : i));
+                    } catch { }
+                });
             } catch (err) {
                 console.error(err);
                 message.error("Không thể tải thực đơn");
