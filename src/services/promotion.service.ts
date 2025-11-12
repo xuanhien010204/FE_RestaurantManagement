@@ -10,10 +10,10 @@ export interface PromotionCreateRequest {
     endDate: string;
 }
 
-const PromotionStatusMap: Record<number, Promotion["status"]> = {
-    0: "Active",
-    1: "Expired"
-};
+// const PromotionStatusMap: Record<number, Promotion["status"]> = {
+//     0: "Active",
+//     1: "Expired"
+// };
 
 export const createPromotion = async (payload: PromotionCreateRequest): Promise<Promotion> => {
     const response = await promotionApi.createPromotion(payload);
@@ -41,6 +41,13 @@ export const applyPromotionCode = async (code: string): Promise<Promotion> => {
     return mapBackendPromotionToFrontend(extractData(response));
 };
 
+export const getAllPromotions = async (): Promise<Promotion[]> => {
+  const response = await promotionApi.getAllPromotions();
+  const promotions = extractArrayData(response);
+  return promotions.map(mapBackendPromotionToFrontend);
+};
+
+
 export const getPromotionById = async (id: number): Promise<Promotion> => {
     const response = await promotionApi.getPromotionById(id);
     return mapBackendPromotionToFrontend(extractData(response));
@@ -57,6 +64,9 @@ const mapBackendPromotionToFrontend = (raw: unknown): Promotion => {
         discount: Number(backendPromotion.discount ?? 0),
         startDate: String(backendPromotion.startDate ?? new Date().toISOString()),
         endDate: String(backendPromotion.endDate ?? new Date().toISOString()),
-        status: PromotionStatusMap[Number(backendPromotion.status ?? 0)] ?? "Active",
+        status:
+      backendPromotion.status === "Expired"
+        ? "Expired"
+        : "Active",
     };
 };

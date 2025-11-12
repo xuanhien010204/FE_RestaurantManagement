@@ -43,7 +43,7 @@ const PromotionManagementPage: React.FC = () => {
   const loadAllPromotions = async () => {
     setLoading(true);
     try {
-      const items = await promotionService.searchPromotions("");
+      const items = await promotionService.getAllPromotions();
       setPromotions(items);
     } catch {
       message.error('Không thể tải danh sách mã giảm giá');
