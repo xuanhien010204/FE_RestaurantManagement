@@ -1,5 +1,6 @@
 import * as orderApi from "../utils/api/order.api";
-import type { Order } from "../types/Order";
+import type { Order, OrderDetail } from "../types/Order";
+import type { MenuItem } from "../types/MenuItem";
 import { extractData, extractArrayData } from "../utils/response-mapper";
 
 export interface OrderCreateRequest {
@@ -17,11 +18,40 @@ export interface OrderUpdateRequest {
     }[];
 }
 
-const OrderStatusMap: Record<number, Order["status"]> = {
+const ORDER_STATUSES: Order["status"][] = ["Pending", "InProgress", "Completed", "Cancelled"];
+const STATUS_BY_NUMBER: Record<number, Order["status"]> = {
     0: "Pending",
     1: "InProgress",
     2: "Completed",
-    3: "Cancelled"
+    3: "Cancelled",
+};
+const STATUS_BY_STRING = ORDER_STATUSES.reduce<Record<string, Order["status"]>>((acc, status) => {
+    acc[status.toLowerCase()] = status;
+    return acc;
+}, {});
+
+const normalizeOrderStatus = (value: unknown): Order["status"] => {
+    if (typeof value === "string") {
+        const trimmed = value.trim();
+        if (!trimmed) return "Pending";
+
+        const lowerKey = trimmed.toLowerCase();
+        if (STATUS_BY_STRING[lowerKey]) {
+            return STATUS_BY_STRING[lowerKey];
+        }
+
+        const maybeNumber = Number(trimmed);
+        if (Number.isFinite(maybeNumber)) {
+            return STATUS_BY_NUMBER[maybeNumber] ?? "Pending";
+        }
+        return "Pending";
+    }
+
+    if (typeof value === "number") {
+        return STATUS_BY_NUMBER[value] ?? "Pending";
+    }
+
+    return "Pending";
 };
 
 export const createOrder = async (payload: OrderCreateRequest) => {
@@ -58,47 +88,81 @@ export const cancelOrder = async (id: number) => {
 
 export const getOrderStatus = async (id: number): Promise<{ status: Order["status"] }> => {
     const response = await orderApi.getOrderStatus(id);
-    const data = extractData(response) as { status: number };
+    const data = extractData(response) as { status?: string | number };
     return {
-        status: OrderStatusMap[Number(data.status ?? 0)] ?? "Pending"
+        status: normalizeOrderStatus(data?.status)
     };
 };
 
 export const updateOrderStatus = async (id: number, status: Order["status"]): Promise<void> => {
-    const statusValue = Object.entries(OrderStatusMap).find(([, v]) => v === status)?.[0];
-    if (statusValue === undefined) {
+    if (!ORDER_STATUSES.includes(status)) {
         throw new Error(`Invalid status: ${status}`);
     }
-    await orderApi.updateOrderStatus(id, Number(statusValue));
+    await orderApi.updateOrderStatus(id, { status });
 };
 
 // Map backend order DTO to frontend Order type
 const mapBackendOrderToFrontend = (raw: unknown): Order => {
     const backendOrder = raw as Record<string, unknown>;
+    const orderId = Number(backendOrder.id ?? 0);
+    const orderDetails = Array.isArray(backendOrder.items)
+        ? backendOrder.items.map((item, index) => mapBackendOrderDetail(orderId, item, index))
+        : [];
+    const fallbackTotal = orderDetails.reduce((sum, detail) => sum + detail.quantity * detail.price, 0);
 
     return {
-        id: Number(backendOrder.id ?? 0),
+        id: orderId,
         userId: Number(backendOrder.userId ?? 0),
         tableId: Number(backendOrder.tableId ?? 0),
         orderTime: String(backendOrder.orderTime ?? new Date().toISOString()),
-        status: OrderStatusMap[Number(backendOrder.status ?? 0)] ?? "Pending",
-        totalAmount: Number(backendOrder.totalAmount ?? 0),
-        orderDetails: Array.isArray(backendOrder.items)
-            ? backendOrder.items.map((item: Record<string, unknown>) => ({
-                id: Number(item.id ?? 0),
-                orderId: Number(backendOrder.id ?? 0),
-                menuItemId: Number(item.menuItemId ?? 0),
-                quantity: Number(item.quantity ?? 0),
-                price: Number(item.price ?? 0),
-                menuItem: item.menuItem ? {
-                    id: Number((item.menuItem as Record<string, unknown>).id ?? 0),
-                    name: String((item.menuItem as Record<string, unknown>).name ?? ""),
-                    description: (item.menuItem as Record<string, unknown>).description as string | undefined,
-                    price: Number((item.menuItem as Record<string, unknown>).price ?? 0),
-                    category: (item.menuItem as Record<string, unknown>).category as string | undefined,
-                    status: "Available" as const,
-                } : undefined
-            }))
-            : [],
+        status: normalizeOrderStatus(backendOrder.status),
+        totalAmount: Number(backendOrder.totalAmount ?? fallbackTotal),
+        orderDetails,
+    };
+};
+
+const mapBackendOrderDetail = (orderId: number, rawItem: unknown, index: number): OrderDetail => {
+    const item = rawItem as Record<string, unknown>;
+    const quantity = Number(item.quantity ?? 0);
+    const price = Number(item.price ?? 0);
+    const menuItemId = Number(item.menuItemId ?? 0);
+
+    return {
+        id: Number(item.id ?? index + 1),
+        orderId,
+        menuItemId,
+        quantity,
+        price,
+        menuItem: resolveMenuItem(item, menuItemId, price),
+    };
+};
+
+const resolveMenuItem = (item: Record<string, unknown>, menuItemId: number, price: number): MenuItem | undefined => {
+    if (item.menuItem) {
+        const nested = item.menuItem as Record<string, unknown>;
+        return {
+            id: Number(nested.id ?? menuItemId),
+            name: String(nested.name ?? ""),
+            description: nested.description as string | undefined,
+            price: Number(nested.price ?? price),
+            category: nested.category as string | undefined,
+            status: "Available",
+            images: (nested.images as MenuItem["images"]) ?? [],
+        };
+    }
+
+    const name = item.menuItemName ? String(item.menuItemName) : undefined;
+    if (!name) {
+        return undefined;
+    }
+
+    return {
+        id: menuItemId,
+        name,
+        description: undefined,
+        price,
+        category: undefined,
+        status: "Available",
+        images: [],
     };
 };

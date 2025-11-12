@@ -26,4 +26,9 @@ export const searchPaginatedOrders = (keyword: string, page: number = 1, pageSiz
 export const updateOrder = (id: number, payload: OrderUpdateRequest) => axios.put(`/order/${id}`, payload);
 export const cancelOrder = (id: number) => axios.put(`/order/${id}/cancel`);
 export const getOrderStatus = (id: number) => axios.get(`/order/${id}/status`);
-export const updateOrderStatus = (id: number, status: number) => axios.put(`/order/${id}/status`, { status });
+export type OrderStatusUpdatePayload = {
+    status: string;
+};
+
+export const updateOrderStatus = (id: number, payload: OrderStatusUpdatePayload) =>
+    axios.put(`/order/${id}/status`, payload);
