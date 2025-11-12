@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Row, Col, Table, Tag, Button, Space, Statistic, message } from 'antd';
+import { Card, Typography, Row, Col, Table, Tag, Button, Space, Statistic, message, Spin } from 'antd';
 import {
     ShoppingCartOutlined,
     UserOutlined,
@@ -7,110 +7,61 @@ import {
     DollarOutlined,
     ClockCircleOutlined,
     CheckCircleOutlined,
-    CalendarOutlined,
     MenuOutlined
 } from '@ant-design/icons';
 import { useAppSelector } from '../../redux/app/hook';
+import * as orderService from '../../services/order.service';
+import * as paymentService from '../../services/payment.service';
+import * as tableService from '../../services/restaurant-table.service';
+import * as menuItemService from '../../services/menu-item.service';
 import type { Order } from '../../types/Order';
 import type { Payment } from '../../types/Payment';
 import type { RestaurantTable } from '../../types/RestaurantTable';
-import type { Reservation } from '../../types/Reservation';
 import type { MenuItem } from '../../types/MenuItem';
-import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
 
 const StaffDashboardPage: React.FC = () => {
     const user = useAppSelector(state => state.auth.user);
 
-    // Mock data for demonstration - in real app, fetch from Redux store
+    const [loading, setLoading] = useState(true);
     const [orders, setOrders] = useState<Order[]>([]);
     const [payments, setPayments] = useState<Payment[]>([]);
     const [tables, setTables] = useState<RestaurantTable[]>([]);
-    const [reservations, setReservations] = useState<Reservation[]>([]);
     const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
     useEffect(() => {
-        // Initialize with mock data for demonstration
-        setOrders([
-            {
-                id: 1,
-                userId: 1,
-                tableId: 1,
-                orderTime: new Date().toISOString(),
-                status: 'Pending',
-                totalAmount: 85.50,
-                orderDetails: []
-            },
-            {
-                id: 2,
-                userId: 2,
-                tableId: 2,
-                orderTime: new Date(Date.now() - 3600000).toISOString(),
-                status: 'InProgress',
-                totalAmount: 65.75,
-                orderDetails: []
+        const fetchDashboardData = async () => {
+            setLoading(true);
+            try {
+                const [ordersData, paymentsData, tablesData, menuData] = await Promise.all([
+                    orderService.getAllOrders(),
+                    paymentService.getAllPayments(),
+                    tableService.getAllTables(),
+                    menuItemService.getAllMenuItems(),
+                ]);
+
+                // Filter today's orders
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const todayOrders = ordersData.filter((o: Order) => {
+                    const orderDate = new Date(o.orderTime);
+                    return orderDate >= today;
+                });
+
+                setOrders(todayOrders);
+                setPayments(paymentsData);
+                setTables(tablesData);
+                setMenuItems(menuData);
+            } catch (error) {
+                console.error('Error fetching staff dashboard data:', error);
+                message.error('Không thể tải dữ liệu dashboard');
+            } finally {
+                setLoading(false);
             }
-        ]);
+        };
 
-        setPayments([
-            {
-                id: 1,
-                orderId: 1,
-                amount: 85.50,
-                paymentDate: new Date().toISOString(),
-                status: 'Completed',
-                paymentDetails: [{
-                    id: 1,
-                    paymentId: 1,
-                    method: 'CreditCard',
-                    amount: 85.50,
-                    transactionCode: 'TXN001'
-                }]
-            }
-        ]);
-
-        setTables([
-            { id: 1, tableNumber: 1, seats: 4, status: 'Available' },
-            { id: 2, tableNumber: 2, seats: 2, status: 'Occupied' },
-            { id: 3, tableNumber: 3, seats: 6, status: 'Reserved' }
-        ]);
-
-        // Mock reservations data
-        setReservations([
-            {
-                id: 1,
-                userId: 1,
-                tableId: 1,
-                reservationTime: dayjs().add(2, 'hours').toISOString(),
-                numberOfGuests: 4,
-                status: 'Pending',
-            },
-            {
-                id: 2,
-                userId: 2,
-                tableId: 3,
-                reservationTime: dayjs().add(5, 'hours').toISOString(),
-                numberOfGuests: 6,
-                status: 'Confirmed',
-            },
-            {
-                id: 3,
-                userId: 3,
-                tableId: 2,
-                reservationTime: dayjs().add(1, 'day').hour(19).minute(0).toISOString(),
-                numberOfGuests: 2,
-                status: 'Pending',
-            }
-        ]);
-
-        // Mock menu items data
-        setMenuItems([
-            { id: 1, name: 'Phở Bò', description: 'Phở bò truyền thống', price: 65000, category: 'Món chính', status: 'Available' },
-            { id: 2, name: 'Cơm Tấm', description: 'Cơm tấm sườn bì chả', price: 45000, category: 'Món chính', status: 'Available' },
-            { id: 3, name: 'Bánh Mì', description: 'Bánh mì thịt nguội', price: 25000, category: 'Món phụ', status: 'Available' },
-            { id: 4, name: 'Cà Phê Sữa', description: 'Cà phê sữa đá', price: 20000, category: 'Đồ uống', status: 'Available' },
-        ]);
+        fetchDashboardData();
     }, []);
 
     const getOrderStatusColor = (status: string) => {
@@ -247,71 +198,7 @@ const StaffDashboardPage: React.FC = () => {
         },
     ];
 
-    // Reservation columns for staff to check reservations
-    const reservationColumns = [
-        {
-            title: 'Mã',
-            dataIndex: 'id',
-            key: 'id',
-            render: (id: number) => `#${id}`,
-        },
-        {
-            title: 'Bàn',
-            dataIndex: 'tableId',
-            key: 'tableId',
-            render: (tableId: number) => `Bàn ${tableId}`,
-        },
-        {
-            title: 'Thời gian',
-            dataIndex: 'reservationTime',
-            key: 'reservationTime',
-            render: (time: string) => (
-                <Space direction="vertical" size={0}>
-                    <span>{dayjs(time).format('DD/MM/YYYY')}</span>
-                    <span className="text-gray-500">{dayjs(time).format('HH:mm')}</span>
-                </Space>
-            ),
-        },
-        {
-            title: 'Số khách',
-            dataIndex: 'numberOfGuests',
-            key: 'numberOfGuests',
-            render: (guests: number) => `${guests} người`,
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'status',
-            key: 'status',
-            render: (status: Reservation['status']) => {
-                const colorMap = { Pending: 'orange', Confirmed: 'green', Cancelled: 'red' };
-                const textMap = { Pending: 'Chờ xác nhận', Confirmed: 'Đã xác nhận', Cancelled: 'Đã hủy' };
-                return <Tag color={colorMap[status]}>{textMap[status]}</Tag>;
-            },
-        },
-        {
-            title: 'Hành động',
-            key: 'actions',
-            render: (_: unknown, record: Reservation) => (
-                <Space>
-                    {record.status === 'Pending' && (
-                        <Button
-                            size="small"
-                            type="primary"
-                            onClick={() => handleQuickAction(`Confirm Reservation ${record.id}`)}
-                        >
-                            Xác nhận
-                        </Button>
-                    )}
-                    <Button
-                        size="small"
-                        onClick={() => handleQuickAction(`View Reservation ${record.id}`)}
-                    >
-                        Chi tiết
-                    </Button>
-                </Space>
-            ),
-        },
-    ];
+
 
     // Menu columns for staff to check menu items
     const menuColumns = [
@@ -365,11 +252,19 @@ const StaffDashboardPage: React.FC = () => {
         .reduce((sum, p) => sum + p.amount, 0);
     const availableTables = tables.filter(t => t.status === 'Available').length;
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <Spin size="large" tip="Đang tải dữ liệu..." />
+            </div>
+        );
+    }
+
     return (
         <div className="p-6">
             <div className="mb-6">
                 <Title level={2}>Staff Dashboard</Title>
-                <Text type="secondary">Welcome back, {user?.fullName}! Here's your operational overview.</Text>
+                <Text type="secondary">Chào mừng trở lại, {user?.fullName}! Đây là tổng quan hoạt động của bạn.</Text>
             </div>
 
             {/* Quick Stats */}
@@ -497,39 +392,9 @@ const StaffDashboardPage: React.FC = () => {
                 </Col>
             </Row>
 
-            {/* Reservations & Menu Section */}
+            {/* Menu Section */}
             <Row gutter={[16, 16]} className="mt-6">
-                <Col xs={24} lg={14}>
-                    <Card
-                        title={
-                            <Space>
-                                <CalendarOutlined />
-                                <span>Đặt bàn hôm nay</span>
-                            </Space>
-                        }
-                        extra={
-                            <Button
-                                type="link"
-                                onClick={() => handleQuickAction('View All Reservations')}
-                            >
-                                Xem tất cả
-                            </Button>
-                        }
-                    >
-                        <Table
-                            columns={reservationColumns}
-                            dataSource={reservations.filter(r =>
-                                dayjs(r.reservationTime).isSame(dayjs(), 'day')
-                            )}
-                            rowKey="id"
-                            pagination={false}
-                            size="small"
-                            scroll={{ x: 600 }}
-                        />
-                    </Card>
-                </Col>
-
-                <Col xs={24} lg={10}>
+                <Col xs={24}>
                     <Card
                         title={
                             <Space>
@@ -540,9 +405,9 @@ const StaffDashboardPage: React.FC = () => {
                         extra={
                             <Button
                                 type="link"
-                                onClick={() => handleQuickAction('Manage Menu')}
+                                onClick={() => handleQuickAction('View All Menu')}
                             >
-                                Quản lý
+                                Xem tất cả
                             </Button>
                         }
                     >
@@ -550,9 +415,9 @@ const StaffDashboardPage: React.FC = () => {
                             columns={menuColumns}
                             dataSource={menuItems}
                             rowKey="id"
-                            pagination={{ pageSize: 5, size: 'small' }}
+                            pagination={{ pageSize: 10, size: 'small' }}
                             size="small"
-                            scroll={{ x: 400 }}
+                            scroll={{ x: 800 }}
                         />
                     </Card>
                 </Col>
