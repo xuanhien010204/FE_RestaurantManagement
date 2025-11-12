@@ -93,20 +93,34 @@ const PublicHomePage: React.FC = () => {
     const [page, setPage] = useState(1);
     const itemsPerPage = 8;
 
-    // 🔹 Chỉ gọi API 1 lần duy nhất khi mount
     useEffect(() => {
         const fetchItems = async () => {
             setLoading(true);
             try {
                 const items = await menuItemService.getAllMenuItems();
-
-                // Backend đã trả về images trong MenuItem response
                 const available = items.filter((i) => i.status === "Available");
-                const uniqueCats = Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]));
 
-                setCategories(uniqueCats);
-                setAllItems(available);
-                setMenuItems(available.slice(0, itemsPerPage)); // render 8 đầu tiên
+                setCategories(
+                    Array.from(new Set(available.map((i) => i.category).filter(Boolean) as string[]))
+                );
+
+                const placeholderMenu = available.map(i => ({ ...i, images: [] }));
+                setAllItems(placeholderMenu);
+                setMenuItems(placeholderMenu.slice(0, itemsPerPage));
+
+                // Preload ảnh - ĐỒNG BỘ theo thứ tự
+                const loadImagesSequentially = async () => {
+                    for (const item of available) {
+                        try {
+                            const images = await menuItemService.getMenuItemImageByMenuItemId(item.id);
+                            setAllItems(prev => prev.map(i => i.id === item.id ? { ...i, images } : i));
+                            setMenuItems(prev => prev.map(i => i.id === item.id ? { ...i, images } : i));
+                        } catch (error) {
+                            console.error(`Failed to load images for item ${item.id}:`, error);
+                        }
+                    }
+                };
+                loadImagesSequentially();
             } catch (err) {
                 console.error(err);
                 message.error("Không thể tải thực đơn");
