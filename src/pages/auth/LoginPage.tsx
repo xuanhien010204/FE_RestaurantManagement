@@ -92,8 +92,17 @@ const LoginPage: React.FC = () => {
                     onError={(err) => setLocalError(String(err ?? "Google login error"))}
                 />
 
-                <div className="mt-4 text-center">
-                    <Link to="/register" className="text-blue-600 hover:underline">Don't have an account? Register</Link>
+                <div className="mt-4 text-center space-y-2">
+                    <div>
+                        <Link to="/forgot-password" className="text-orange-600 hover:underline">
+                            Quên mật khẩu?
+                        </Link>
+                    </div>
+                    <div>
+                        <Link to="/register" className="text-blue-600 hover:underline">
+                            Chưa có tài khoản? Đăng ký ngay
+                        </Link>
+                    </div>
                 </div>
             </Card>
         </div>

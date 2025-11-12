@@ -11,6 +11,8 @@ const ContactPage = lazy(() => import("../pages/public/ContactPage"));
 // Lazy load pages for better performance
 const LoginPage = lazy(() => import("../pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("../pages/auth/RegisterPage"));
+const ForgotPasswordPage = lazy(() => import("../pages/auth/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("../pages/auth/ResetPasswordPage"));
 
 // Admin pages
 const AdminDashboardPage = lazy(() => import("../pages/admin/AdminDashboardPage"));
@@ -62,6 +64,26 @@ export const routeConfig: RouteObject[] = [
             <AppLayout>
                 <PublicGuard>
                     <RegisterPage />
+                </PublicGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/forgot-password",
+        element: (
+            <AppLayout>
+                <PublicGuard>
+                    <ForgotPasswordPage />
+                </PublicGuard>
+            </AppLayout>
+        ),
+    },
+    {
+        path: "/reset-password/:token",
+        element: (
+            <AppLayout>
+                <PublicGuard>
+                    <ResetPasswordPage />
                 </PublicGuard>
             </AppLayout>
         ),

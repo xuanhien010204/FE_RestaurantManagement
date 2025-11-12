@@ -6,12 +6,16 @@ import {
     RiseOutlined,
     ClockCircleOutlined,
     UserOutlined,
+    MessageOutlined,
+    StarOutlined,
 } from '@ant-design/icons';
 import * as orderService from '../../services/order.service';
 import * as paymentService from '../../services/payment.service';
 import * as customerService from '../../services/customer.service';
+import * as feedbackService from '../../services/feedback.service';
 import type { Order, OrderStatus } from '../../types/Order';
 import type { Payment } from '../../types/Payment';
+import type { Feedback } from '../../types/Feedback';
 
 const { Title } = Typography;
 
@@ -30,6 +34,10 @@ interface PopularItem {
     revenue: number;
 }
 
+interface OrderWithCustomer extends Order {
+    customerName?: string;
+}
+
 const AdminDashboardPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<DashboardStats>({
@@ -40,8 +48,9 @@ const AdminDashboardPage: React.FC = () => {
         totalCustomers: 0,
         pendingOrders: 0,
     });
-    const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+    const [recentOrders, setRecentOrders] = useState<OrderWithCustomer[]>([]);
     const [popularItems, setPopularItems] = useState<PopularItem[]>([]);
+    const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
 
     useEffect(() => {
         fetchDashboardData();
@@ -50,10 +59,11 @@ const AdminDashboardPage: React.FC = () => {
     const fetchDashboardData = async () => {
         setLoading(true);
         try {
-            const [orders, payments, customers] = await Promise.all([
+            const [orders, payments, customers, allFeedbacks] = await Promise.all([
                 orderService.getAllOrders(),
                 paymentService.getAllPayments(),
                 customerService.getAllCustomers(),
+                feedbackService.getAllFeedbacks(),
             ]);
 
             const today = new Date();
@@ -86,10 +96,24 @@ const AdminDashboardPage: React.FC = () => {
                 pendingOrders,
             });
 
+            // Get recent orders and fetch customer names
             const sortedOrders = [...orders]
                 .sort((a, b) => new Date(b.orderTime).getTime() - new Date(a.orderTime).getTime())
                 .slice(0, 10);
-            setRecentOrders(sortedOrders);
+
+            // Create a map of customer IDs to customer names for efficient lookup
+            const customerMap = new Map(customers.map(c => [c.id, c.fullName]));
+
+            // Map orders with customer names
+            const ordersWithCustomers: OrderWithCustomer[] = sortedOrders.map(order => ({
+                ...order,
+                customerName: customerMap.get(order.userId) || 'N/A',
+            }));
+
+            setRecentOrders(ordersWithCustomers);
+
+            // Set feedbacks (already includes user data from backend)
+            setFeedbacks(allFeedbacks.slice(0, 10));
 
             const itemCounts = new Map<number, { name: string; quantity: number; revenue: number }>();
             orders.forEach((order: Order) => {
@@ -126,7 +150,7 @@ const AdminDashboardPage: React.FC = () => {
         },
         {
             title: 'Khách hàng',
-            dataIndex: ['user', 'name'],
+            dataIndex: 'customerName',
             key: 'customer',
             render: (name: string) => name || 'N/A',
         },
@@ -176,6 +200,50 @@ const AdminDashboardPage: React.FC = () => {
             dataIndex: 'revenue',
             key: 'revenue',
             render: (revenue: number) => `${revenue.toLocaleString('vi-VN')}đ`,
+        },
+    ];
+
+    const feedbackColumns = [
+        {
+            title: 'Khách hàng',
+            dataIndex: ['user', 'fullName'],
+            key: 'customer',
+            render: (name: string) => name || 'Ẩn danh',
+        },
+        {
+            title: 'Đánh giá',
+            dataIndex: 'rating',
+            key: 'rating',
+            render: (rating: number) => (
+                <div className="flex items-center">
+                    <StarOutlined style={{ color: '#fadb14', marginRight: 4 }} />
+                    <span>{rating}/5</span>
+                </div>
+            ),
+        },
+        {
+            title: 'Nhận xét',
+            dataIndex: 'comment',
+            key: 'comment',
+            render: (comment: string) => (
+                <div className="max-w-xs truncate">{comment || 'Không có nhận xét'}</div>
+            ),
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'isApproved',
+            key: 'isApproved',
+            render: (isApproved: boolean) => (
+                <Tag color={isApproved ? 'green' : 'orange'}>
+                    {isApproved ? 'Đã duyệt' : 'Chờ duyệt'}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Thời gian',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            render: (date: string) => new Date(date).toLocaleDateString('vi-VN'),
         },
     ];
 
@@ -259,7 +327,7 @@ const AdminDashboardPage: React.FC = () => {
 
             {/* Tables */}
             <Row gutter={[16, 16]}>
-                <Col xs={24} lg={14}>
+                <Col xs={24} xl={16}>
                     <Card title="Đơn hàng gần đây" bordered={false}>
                         <Table
                             dataSource={recentOrders}
@@ -270,13 +338,36 @@ const AdminDashboardPage: React.FC = () => {
                         />
                     </Card>
                 </Col>
-                <Col xs={24} lg={10}>
+                <Col xs={24} xl={8}>
                     <Card title="Món ăn bán chạy" bordered={false}>
                         <Table
                             dataSource={popularItems}
                             columns={popularItemColumns}
                             rowKey="name"
                             pagination={false}
+                        />
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Feedback Section */}
+            <Row gutter={[16, 16]} className="mt-6">
+                <Col span={24}>
+                    <Card
+                        title={
+                            <div className="flex items-center">
+                                <MessageOutlined className="mr-2" />
+                                <span>Đánh giá gần đây</span>
+                            </div>
+                        }
+                        bordered={false}
+                    >
+                        <Table
+                            dataSource={feedbacks}
+                            columns={feedbackColumns}
+                            rowKey="id"
+                            pagination={false}
+                            scroll={{ x: 1000 }}
                         />
                     </Card>
                 </Col>
