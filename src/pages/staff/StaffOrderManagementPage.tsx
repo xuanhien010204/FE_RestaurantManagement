@@ -142,6 +142,20 @@ const StaffOrderManagementPage: React.FC = () => {
     const handleRemoveDraftItem = (menuItemId: number) => {
         setDraftItems(prev => prev.filter(item => item.menuItemId !== menuItemId));
     };
+    const getOrderDetailUnitPrice = (detail?: OrderDetail | null): number => {
+        if (!detail) return 0;
+        if (detail.price && detail.price > 0) return detail.price;
+        return detail.menuItem?.price || 0;
+    };
+    const getOrderDetailTotal = (detail?: OrderDetail | null): number => {
+        if (!detail) return 0;
+        return getOrderDetailUnitPrice(detail) * (detail.quantity ?? 0);
+    };
+    const getOrderDisplayTotal = (order?: Order | null): number => {
+        if (!order) return 0;
+        if (order.totalAmount && order.totalAmount > 0) return order.totalAmount;
+        return (order.orderDetails ?? []).reduce((sum, detail) => sum + getOrderDetailTotal(detail), 0);
+    };
     const handleCreateOrderSubmit = async () => {
         if (!selectedTableId) {
             message.warning('Vui long chon ban phu vu');
@@ -241,9 +255,12 @@ const StaffOrderManagementPage: React.FC = () => {
             dataIndex: 'totalAmount',
             key: 'totalAmount',
             width: 120,
-            render: (amount: number) => (
-                <strong style={{ color: '#1890ff' }}>{amount.toLocaleString('vi-VN')}đ</strong>
-            ),
+            render: (_: number, record: Order) => {
+                const amount = getOrderDisplayTotal(record);
+                return (
+                    <strong style={{ color: '#1890ff' }}>{amount.toLocaleString('vi-VN')}đ</strong>
+                );
+            },
         },
         {
             title: 'Trạng thái',
@@ -309,14 +326,17 @@ const StaffOrderManagementPage: React.FC = () => {
             dataIndex: 'price',
             key: 'price',
             width: 120,
-            render: (price: number) => `${price.toLocaleString('vi-VN')}đ`,
+            render: (_: number, record: OrderDetail) => {
+                const price = getOrderDetailUnitPrice(record);
+                return `${price.toLocaleString('vi-VN')}đ`;
+            },
         },
         {
             title: 'Thành tiền',
             key: 'total',
             width: 130,
             render: (_: unknown, record: OrderDetail) => (
-                <strong>{(record.quantity * record.price).toLocaleString('vi-VN')}đ</strong>
+                <strong>{getOrderDetailTotal(record).toLocaleString('vi-VN')}đ</strong>
             ),
         },
     ];
@@ -501,7 +521,7 @@ const StaffOrderManagementPage: React.FC = () => {
                             </Descriptions.Item>
                             <Descriptions.Item label="Tổng tiền">
                                 <strong style={{ color: '#1890ff', fontSize: '16px' }}>
-                                    {selectedOrder.totalAmount.toLocaleString('vi-VN')}đ
+                                    {getOrderDisplayTotal(selectedOrder).toLocaleString('vi-VN')}đ
                                 </strong>
                             </Descriptions.Item>
                         </Descriptions>
@@ -525,7 +545,7 @@ const StaffOrderManagementPage: React.FC = () => {
                         <Table
                             dataSource={selectedOrder.orderDetails || []}
                             columns={detailColumns}
-                            rowKey="id"
+                            rowKey={(record) => record.id ?? `detail-${record.menuItemId}-${record.quantity}`}
                             pagination={false}
                         />
                     </div>
